@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Website resmi Desa Kale Ko'mara, Kabupaten Takalar, Sulawesi Selatan.">
+  <meta name="theme-color" content="#173d32">
+  <title>Desa Kale Ko'mara — Takalar</title>
+
+  <!-- Satu-satunya library eksternal: Font Awesome -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="assets/icon.png">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Lewati ke konten</a>
+
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" data-route="home" aria-label="Desa Kale Ko'mara, halaman Home">
+        <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
+        <span class="brand-copy">
+          <strong>Desa Kale Ko'mara</strong>
+          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Utara</small>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka menu navigasi">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="primary-nav" id="primary-nav" aria-label="Navigasi utama">
+        <a class="nav-link active" href="#home" data-route="home">Home</a>
+        <a class="nav-link" href="#berita" data-route="berita">Berita</a>
+        <a class="nav-link" href="#galeri" data-route="galeri">Galeri</a>
+        <a class="nav-link" href="#info" data-route="info">Info</a>
+        <a class="nav-link" href="#anggaran" data-route="anggaran">Anggaran</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <!-- HOME -->
+    <section class="page-panel active" id="home" data-page="home" aria-labelledby="home-title">
+      <div class="hero">
+        <!--
+          Background hero mendukung video dan gambar fallback.
+          Saat file assets/video/hero-desa.mp4 belum tersedia,
+          browser otomatis menampilkan hero-background.svg.
+        -->
+        <div class="hero-media" aria-hidden="true">
+          <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/hero.png">
+            <source src="assets/hero.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <p class="eyebrow"><span></span> Kabupaten Takalar ·  Kecamatan Polongbangkeng Utara  ·  Sulawesi Selatan</p>
+            <h1 id="home-title">Ruang informasi<br>Desa <em>Kale Ko'mara</em></h1>
+            <p class="hero-lead">Tempat warga menemukan kabar desa, informasi pelayanan, dan dokumentasi kegiatan dalam satu ruang yang sederhana.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#info" data-route="info">
+                Lihat info desa <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </a>
+              <a class="text-link" href="#berita" data-route="berita">Baca kabar terbaru <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+
+          <div class="hero-location reveal delay-1">
+            <span class="caption-line"></span>
+            <p><small>Selamat datang di</small><strong>Desa Kale Ko'mara</strong><span>PolongBangkeng Utara, Takalar, Sulawesi Selatan</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-block">
+        <div class="section-heading reveal">
+          <div>
+            <p class="section-kicker">Akses cepat</p>
+            <h2>Yang sering dicari warga</h2>
+          </div>
+          <p>Informasi penting dibuat ringkas agar mudah ditemukan dari perangkat apa pun.</p>
+        </div>
+
+        <div class="quick-grid">
+          <a class="quick-card reveal" href="#berita" data-route="berita">
+            <span class="quick-number">01</span>
+            <div class="quick-icon"><i class="fa-regular fa-newspaper" aria-hidden="true"></i></div>
+            <h3>Kabar desa</h3>
+            <p>Berita kegiatan dan pengumuman terbaru.</p>
+            <span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="quick-card reveal delay-1" href="#info-layanan" data-route="info">
+            <span class="quick-number">02</span>
+            <div class="quick-icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></div>
+            <h3>Pelayanan</h3>
+            <p>Panduan singkat layanan administrasi desa.</p>
+            <span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="quick-card reveal delay-2" href="#galeri" data-route="galeri">
+            <span class="quick-number">03</span>
+            <div class="quick-icon"><i class="fa-regular fa-images" aria-hidden="true"></i></div>
+            <h3>Dokumentasi</h3>
+            <p>Potret kegiatan dan kehidupan warga desa.</p>
+            <span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <section class="welcome-section">
+        <div class="container welcome-grid">
+          <div class="welcome-image reveal">
+            <img src="assets/bendung.jpeg" alt="Tempat untuk foto kegiatan warga Desa Kale Ko'mara" width="400" height="600">
+            <span class="image-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Kale Ko'mara</span>
+          </div>
+          <div class="welcome-copy reveal delay-1">
+            <p class="section-kicker">Tentang desa</p>
+            <h2>Tumbuh bersama, dekat dengan warga.</h2>
+            <p>Website ini menjadi bagian dari upaya menghadirkan informasi desa yang lebih terbuka, mudah dijangkau, dan bermanfaat bagi seluruh warga Desa Kale Ko'mara.</p>
+            <p>Informasi resmi mengenai profil, program, dan layanan desa akan diperbarui secara berkala melalui halaman ini.</p>
+            <a class="text-link dark" href="#info" data-route="info">Mengenal desa lebih dekat <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="container section-block latest-section">
+        <div class="section-heading reveal">
+          <div>
+            <p class="section-kicker">Kabar terbaru</p>
+            <h2>Berita dari desa</h2>
+          </div>
+          <a class="text-link dark" href="#berita" data-route="berita">Lihat semua berita <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="news-grid" id="home-news-list" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <!-- BERITA -->
+    <section class="page-panel" id="berita" data-page="berita" aria-labelledby="berita-title" hidden>
+      <div class="page-hero">
+        <div class="container page-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> Informasi warga</p>
+            <h1 id="berita-title">Kabar dari<br>Kale Ko'mara.</h1>
+          </div>
+          <p>Catatan kegiatan, pengumuman, dan informasi pelayanan untuk warga Desa Kale Ko'mara.</p>
+        </div>
+      </div>
+
+      <div class="container content-block">
+        <div class="toolbar" aria-label="Filter berita">
+          <label class="search-box">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <span class="sr-only">Cari berita</span>
+            <input id="news-search" type="search" placeholder="Cari judul berita..." autocomplete="off">
+          </label>
+          <div class="filter-group" id="news-filters">
+            <button class="filter-button active" type="button" data-filter="semua">Semua</button>
+            <button class="filter-button" type="button" data-filter="pengumuman">Pengumuman</button>
+            <button class="filter-button" type="button" data-filter="kegiatan">Kegiatan</button>
+            <button class="filter-button" type="button" data-filter="pelayanan">Pelayanan</button>
+          </div>
+        </div>
+
+        <div class="news-grid full" id="news-list" aria-live="polite"></div>
+        <p class="empty-state" id="news-empty" hidden>Tidak ada berita yang sesuai dengan pencarian.</p>
+      </div>
+    </section>
+
+    <!-- GALERI -->
+    <section class="page-panel" id="galeri" data-page="galeri" aria-labelledby="galeri-title" hidden>
+      <div class="page-hero gallery-hero">
+        <div class="container page-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> Dokumentasi desa</p>
+            <h1 id="galeri-title">Cerita dalam<br>setiap gambar.</h1>
+          </div>
+          <p>Potret sederhana dari kegiatan, lingkungan, dan keseharian warga Desa Kale Ko'mara.</p>
+        </div>
+      </div>
+
+      <div class="container content-block">
+        <div class="gallery-intro">
+          <p class="section-kicker">Galeri desa</p>
+          <div class="filter-group" id="gallery-filters" aria-label="Filter galeri">
+            <button class="filter-button active" type="button" data-filter="semua">Semua</button>
+            <button class="filter-button" type="button" data-filter="kegiatan">Kegiatan</button>
+            <button class="filter-button" type="button" data-filter="lingkungan">Lingkungan</button>
+            <button class="filter-button" type="button" data-filter="warga">Warga</button>
+          </div>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <!-- INFO -->
+    <section class="page-panel" id="info" data-page="info" aria-labelledby="info-title" hidden>
+      <div class="page-hero info-hero">
+        <div class="container page-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> Profil & layanan</p>
+            <h1 id="info-title">Informasi<br>Desa.</h1>
+          </div>
+          <p>Kenali Desa Kale Ko'mara dan temukan informasi dasar pelayanan kantor desa.</p>
+        </div>
+      </div>
+
+      <div class="container content-block info-layout">
+        <aside class="info-nav reveal" aria-label="Navigasi informasi">
+          <p>Daftar informasi</p>
+          <a href="#info-profil" class="active">Profil desa <span>01</span></a>
+          <a href="#info-struktur">Struktur pemerintahan <span>02</span></a>
+          <a href="#info-statistik">Statistik desa <span>03</span></a>
+          <a href="#info-layanan">Pelayanan <span>04</span></a>
+          <a href="#info-kontak">Kontak & lokasi <span>05</span></a>
+        </aside>
+
+        <div class="info-content">
+          <article class="info-section reveal" id="info-profil">
+            <p class="section-kicker">01 · Profil desa</p>
+            <h2>Sekilas Kale Ko'mara</h2>
+            <p class="lead-copy">Desa Kale Ko'mara berada di wilayah Kabupaten Takalar, Sulawesi Selatan. Halaman ini disiapkan sebagai pusat informasi yang dekat dan mudah digunakan oleh warga.</p>
+            <div class="fact-grid">
+              <div class="fact-item">
+                <span>Wilayah</span>
+                <strong>Kabupaten Takalar</strong>
+              </div>
+              <div class="fact-item">
+                <span>Provinsi</span>
+                <strong>Sulawesi Selatan</strong>
+              </div>
+              <div class="fact-item">
+                <span>Kecamatan</span>
+                <strong>Data akan dilengkapi</strong>
+              </div>
+              <div class="fact-item">
+                <span>Kode pos</span>
+                <strong>Data akan dilengkapi</strong>
+              </div>
+            </div>
+
+            <div class="profil-sub">
+              <h3>Sejarah singkat</h3>
+              <p>Catatan sejarah berdirinya Desa Kale Ko'mara, asal-usul nama, serta tokoh dan peristiwa penting yang membentuk desa akan dilengkapi di bagian ini. Bagian ini disiapkan agar warga, khususnya generasi muda, dapat mengenal asal-usul kampung halamannya.</p>
+            </div>
+
+            <div class="profil-sub">
+              <h3>Visi</h3>
+              <p class="vision-copy">Rumusan visi desa.</p>
+              <h3>Misi</h3>
+              <ol class="mission-list">
+                <li>Poin misi pertama Desa.</li>
+                <li>Poin misi kedua Desa.</li>
+                <li>Poin misi ketiga Desa.</li>
+              </ol>
+            </div>
+          </article>
+
+          <article class="info-section reveal" id="info-struktur">
+            <p class="section-kicker">02 · Struktur pemerintahan</p>
+            <h2>Perangkat desa</h2>
+            <p class="lead-copy">Susunan organisasi Pemerintah Desa Kale Ko'mara yang menjalankan tugas pelayanan dan pembangunan bagi warga.</p>
+            <div class="struktur-list" id="struktur-list"></div>
+          </article>
+
+          <article class="info-section reveal" id="info-statistik">
+            <p class="section-kicker">03 · Statistik desa</p>
+            <h2>Data kependudukan</h2>
+            <p class="lead-copy">Gambaran umum jumlah dan sebaran penduduk Desa Kale Ko'mara. Data akan diperbarui secara berkala mengikuti pemutakhiran data desa.</p>
+
+            <div class="fact-grid stat-grid" id="stat-grid"></div>
+
+            <div class="gender-block">
+              <div class="gender-block-heading">
+                <span>Komposisi penduduk berdasarkan jenis kelamin</span>
+              </div>
+              <div class="gender-bar" id="gender-bar" role="img" aria-label="Perbandingan jumlah penduduk laki-laki dan perempuan"></div>
+              <div class="gender-legend" id="gender-legend"></div>
+            </div>
+
+            <div class="dusun-block">
+              <h3>Pembagian wilayah</h3>
+              <div class="dusun-list" id="dusun-list"></div>
+            </div>
+          </article>
+
+          <article class="info-section reveal" id="info-layanan">
+            <p class="section-kicker">04 · Pelayanan</p>
+            <h2>Layanan administrasi</h2>
+            <p>Silakan menghubungi atau datang ke kantor desa untuk memastikan persyaratan terbaru sebelum mengurus dokumen.</p>
+            <div class="service-list">
+              <div class="service-item">
+                <span class="service-icon"><i class="fa-regular fa-id-card" aria-hidden="true"></i></span>
+                <div><h3>Administrasi kependudukan</h3><p>Surat pengantar dan kebutuhan administrasi warga.</p></div>
+                <span class="service-number">01</span>
+              </div>
+              <div class="service-item">
+                <span class="service-icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></span>
+                <div><h3>Surat keterangan</h3><p>Informasi pengurusan surat sesuai kebutuhan warga.</p></div>
+                <span class="service-number">02</span>
+              </div>
+              <div class="service-item">
+                <span class="service-icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span>
+                <div><h3>Informasi bantuan</h3><p>Informasi awal program sosial dan layanan masyarakat.</p></div>
+                <span class="service-number">03</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="info-section reveal" id="info-kontak">
+            <p class="section-kicker">05 · Kontak & lokasi</p>
+            <h2>Temui kami</h2>
+            <div class="contact-grid">
+              <div class="contact-details">
+                <div class="contact-row">
+                  <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                  <div><span>Alamat kantor desa</span><strong>Desa Kale Ko'mara, Kecamatan Polongbangkeng Utara, Kabupaten Takalar</strong><small>Alamat lengkap akan diperbarui</small></div>
+                </div>
+                <div class="contact-row">
+                  <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                  <div><span>Telepon / WhatsApp</span><strong>Nomor akan diperbarui</strong></div>
+                </div>
+                <div class="contact-row">
+                  <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                  <div><span>Jam pelayanan</span><strong>Jadwal akan diperbarui</strong></div>
+                </div>
+              </div>
+              <div class="map-placeholder" role="img" aria-label="Tempat untuk peta lokasi Kantor Desa Kale Ko'mara">
+                <div class="map-lines" aria-hidden="true"></div>
+                <span class="map-pin"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span>
+                <p>Kantor Desa<br><strong>Kale Ko'mara</strong></p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANGGARAN -->
+    <section class="page-panel" id="anggaran" data-page="anggaran" aria-labelledby="anggaran-title" hidden>
+      <div class="page-hero anggaran-hero">
+        <div class="container page-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> Transparansi desa</p>
+            <h1 id="anggaran-title">Anggaran<br>Pendapatan &amp; Belanja.</h1>
+          </div>
+          <p>Ringkasan APBDes Desa Kale Ko'mara sebagai bentuk keterbukaan informasi bagi warga. Angka bersifat contoh dan akan diperbarui sesuai dokumen resmi.</p>
+        </div>
+      </div>
+
+      <div class="container content-block">
+        <div class="gallery-intro">
+          <p class="section-kicker">Pilih tahun anggaran</p>
+          <div class="filter-group" id="anggaran-filters" aria-label="Filter tahun anggaran"></div>
+        </div>
+
+        <div class="budget-summary-grid" id="budget-summary"></div>
+
+        <div class="budget-columns">
+          <div class="budget-block">
+            <h3>Pendapatan</h3>
+            <div class="budget-list" id="budget-pendapatan"></div>
+          </div>
+          <div class="budget-block">
+            <h3>Belanja</h3>
+            <div class="budget-list" id="budget-belanja"></div>
+          </div>
+        </div>
+
+        <div class="doc-block">
+          <h3>Dokumen resmi</h3>
+          <p>Unduh dokumen APBDes lengkap dalam format PDF untuk tahun anggaran yang dipilih.</p>
+          <div class="doc-list" id="doc-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <div>
+        <a class="brand footer-brand" href="#home" data-route="home">
+          <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
+          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</small></span>
+        </a>
+        <p>Ruang informasi untuk warga, dari desa untuk bersama.</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <span>Navigasi</span>
+          <a href="#home" data-route="home">Home</a>
+          <a href="#berita" data-route="berita">Berita</a>
+          <a href="#galeri" data-route="galeri">Galeri</a>
+          <a href="#info" data-route="info">Info</a>
+          <a href="#anggaran" data-route="anggaran">Anggaran</a>
+        </div>
+        <div>
+          <span>Kontak</span>
+          <a href="#info-kontak" data-route="info">Lokasi kantor</a>
+          <a href="#info-layanan" data-route="info">Pelayanan</a>
+          <a href="https://www.instagram.com/desakalekomara_/" data-route="info">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="current-year"></span> Pemerintah Desa Kale Ko'mara.</p>
+      <p>Program KKN Universitas Handayani Makassar</p>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title">
+    <button class="lightbox-close" type="button" aria-label="Tutup galeri"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <div class="lightbox-content">
+      <div class="lightbox-stage" id="lightbox-stage">
+        <img id="lightbox-image" src="" alt="">
+        <button class="lightbox-nav prev" type="button" aria-label="Foto sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+        <button class="lightbox-nav next" type="button" aria-label="Foto berikutnya"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+      </div>
+      <div><span id="lightbox-category"></span><h2 id="lightbox-title"></h2><p id="lightbox-description"></p></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a6d1206ab34adc',t:'MTc4NjYxNDY0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
