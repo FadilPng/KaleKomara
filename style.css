@@ -89,6 +89,10 @@ button { color: inherit; }
 }
 .nav-link:hover, .nav-link.active { color: var(--green); }
 .nav-link.active::after { right: 0; }
+.nav-link-admin { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px !important; color: var(--green) !important; background: var(--sage-light); border-radius: 20px; }
+.nav-link-admin::after { display: none; }
+.nav-link-admin:hover { background: var(--sage); }
+.nav-link-admin i { font-size: 11px; }
 .menu-toggle {
   display: none; width: 44px; height: 44px; padding: 11px;
   border: 0; background: transparent; cursor: pointer;
@@ -98,7 +102,9 @@ button { color: inherit; }
 /* Page behavior */
 .page-panel { min-height: 70vh; }
 .page-panel[hidden] { display: none !important; }
-.page-panel.is-entering { animation: pageIn .45s var(--ease) both; }
+.page-panel.is-entering > *:not(.page-hero):not(.hero) { animation: pageIn .45s var(--ease) both; }
+.page-panel.is-entering .page-hero-inner > * { animation: pageIn .5s var(--ease) both; }
+.page-panel.is-entering .page-hero-inner > p { animation-delay: .08s; }
 @keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Shared typography */
@@ -122,7 +128,7 @@ button { color: inherit; }
   font-size: 13px; font-weight: 700;
 }
 .text-link span { transition: transform .22s ease; }
-.text-link:hover span { transform: translate(3px, -2px); }
+.text-link:hover span { transform: translate(3px, 0px); }
 .text-link.dark { color: var(--green); border-bottom-color: rgba(23,61,50,.25); }
 .button {
   display: inline-flex; align-items: center; justify-content: center; gap: 12px;
@@ -271,6 +277,18 @@ button { color: inherit; }
 .news-card:hover h3 a { background-size: 100% 1px; }
 .news-excerpt { margin-bottom: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.65; }
 .news-sample { display: inline-block; margin-top: 13px; color: #8a7565; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.loading-text { grid-column: 1 / -1; padding: 40px 0; text-align: center; color: #8a928e; font-size: 14px; }
+
+/* Halaman detail berita */
+.article-hero-inner { min-height: 280px; align-items: end; }
+.article-hero-inner h1 { font-size: clamp(32px, 4.2vw, 48px); line-height: 1.22; }
+.article-content { max-width: 760px; padding-block: 56px 0; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 34px; }
+.article-image { overflow: hidden; margin-bottom: 40px; border-radius: var(--radius-md); background: var(--sage); aspect-ratio: 16/9; }
+.article-image img { width: 100%; height: 100%; object-fit: cover; }
+.article-body p { margin: 0 0 22px; color: var(--ink-soft); font-size: 16px; line-height: 1.85; }
+.article-body p:last-child { margin-bottom: 0; }
+.article-not-found { color: var(--ink-soft); font-size: 15px; }
 .empty-state { margin: 50px 0; padding: 36px; color: var(--ink-soft); background: var(--sage-light); text-align: center; border-radius: var(--radius-sm); }
 
 /* Gallery */
@@ -342,14 +360,29 @@ button { color: inherit; }
 .mission-list { max-width: 700px; margin: 0; padding-left: 22px; color: var(--ink-soft); font-size: 14px; line-height: 1.9; }
 .mission-list li::marker { color: var(--orange); font-weight: 700; }
 
-/* Struktur pemerintahan */
-.struktur-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 38px; background: var(--line); border: 1px solid var(--line); }
+/* Struktur pemerintahan — disusun bertingkat: pimpinan, kaur & kasi, staf, kadus */
+.struktur-list { margin-top: 38px; }
+.struktur-tier { position: relative; padding-left: 26px; margin-bottom: 40px; }
+.struktur-tier::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; background: var(--line); }
+.struktur-tier:last-child { margin-bottom: 0; }
+.struktur-tier-label { margin: 0 0 16px; color: var(--green); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+.struktur-tier-label::before { content: "—"; margin-right: 8px; color: #b7c1bc; }
+
+.struktur-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.struktur-tier-pimpinan .struktur-grid { grid-template-columns: repeat(2, minmax(0, 260px)); }
 .struktur-item { display: flex; flex-direction: column; background: var(--paper); }
 .struktur-item > div { padding: 20px 22px 24px; }
 .struktur-avatar { display: block; overflow: hidden; width: 100%; aspect-ratio: 1; background: var(--sage); }
 .struktur-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .struktur-item h3 { margin: 0; font-size: 15px; font-weight: 700; }
 .struktur-item span { color: #8a928e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Staf pelaksana: baris ringkas tanpa kartu foto besar, karena jumlahnya banyak */
+.struktur-tier-staf .struktur-grid { grid-template-columns: 1fr; background: none; border: none; gap: 8px; }
+.struktur-tier-staf .struktur-item { flex-direction: row; align-items: center; gap: 14px; padding: 12px 16px; background: var(--sage-light); border-radius: var(--radius-sm); }
+.struktur-tier-staf .struktur-avatar { width: 40px; height: 40px; flex: none; border-radius: 50%; }
+.struktur-tier-staf .struktur-item > div { padding: 0; }
+.struktur-tier-staf .struktur-item h3 { font-size: 14px; }
 
 /* Statistik desa */
 .stat-grid .fact-item strong { font-size: 26px; }
@@ -424,6 +457,11 @@ button { color: inherit; }
 .lightbox-content { display: grid; grid-template-columns: 1.5fr .8fr; min-height: 500px; }
 .lightbox-stage { position: relative; overflow: hidden; background: #0a1712; }
 .lightbox-content img { width: 100%; height: 100%; max-height: 76vh; object-fit: cover; }
+.lightbox-content img#lightbox-image { transition: transform .34s var(--ease), opacity .34s var(--ease); }
+.lb-img-exit-left { transform: translateX(-26px); opacity: 0; }
+.lb-img-exit-right { transform: translateX(26px); opacity: 0; }
+.lb-img-enter-right { transform: translateX(26px); opacity: 0; transition: none; }
+.lb-img-enter-left { transform: translateX(-26px); opacity: 0; transition: none; }
 .lightbox-nav {
   position: absolute; z-index: 4; top: 50%; transform: translateY(-50%);
   display: grid; place-items: center; width: 40px; height: 40px;
@@ -476,6 +514,7 @@ button { color: inherit; }
   .primary-nav.open { opacity: 1; visibility: visible; transform: translateY(0); }
   .nav-link { padding: 13px 4px; border-bottom: 1px solid var(--line); font-size: 14px; }
   .nav-link::after { display: none; }
+  .nav-link-admin { justify-content: center; margin-top: 10px; border-bottom: none !important; border-radius: 10px; }
   .hero, .hero-grid { min-height: 620px; }
   .hero-grid { gap: 40px; padding-block: 74px 58px; }
   .hero-copy { max-width: 650px; }
@@ -494,7 +533,8 @@ button { color: inherit; }
   .info-layout { grid-template-columns: 190px minmax(0,1fr); gap: 50px; }
   .contact-grid { grid-template-columns: 1fr; }
   .map-placeholder { min-height: 300px; }
-  .struktur-list { grid-template-columns: repeat(2, 1fr); }
+  .struktur-grid { grid-template-columns: repeat(2, 1fr); }
+  .struktur-tier-pimpinan .struktur-grid { grid-template-columns: repeat(2, minmax(0, 220px)); }
   .dusun-list { grid-template-columns: repeat(2, 1fr); }
   .budget-summary-grid { grid-template-columns: 1fr 1fr; }
   .budget-columns { grid-template-columns: 1fr; gap: 46px; }
@@ -547,7 +587,8 @@ button { color: inherit; }
   .lead-copy { font-size: 18px; }
   .service-item { grid-template-columns: 48px minmax(0,1fr); gap: 14px; padding-block: 16px; }
   .service-number { display: none; }
-  .struktur-list { grid-template-columns: 1fr; }
+  .struktur-grid, .struktur-tier-pimpinan .struktur-grid { grid-template-columns: 1fr; }
+  .struktur-tier { padding-left: 18px; }
   .dusun-list { grid-template-columns: 1fr; }
   .gender-legend { gap: 18px; }
   .budget-summary-grid { grid-template-columns: 1fr; }

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Panel — Desa Kale Ko'mara</title>
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/admin.css">
+  <link rel="icon" type="image/x-icon" href="assets/icon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/js/supabase-client.js" defer></script>
+  <script src="assets/js/admin.js" defer></script>
+</head>
+<body class="admin-body">
+
+  <!-- ============ LAYAR LOGIN ============ -->
+  <div id="login-screen" class="admin-login">
+    <div class="admin-login-card">
+      <div class="admin-login-visual">
+        <svg class="admin-login-contours" viewBox="0 0 420 520" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <path d="M210,40 C120,140 60,220 30,330 C10,400 20,470 60,520 L360,520 C400,470 410,400 390,330 C360,220 300,140 210,40 Z" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.5"/>
+          <path d="M210,95 C138,178 90,244 66,336 C50,394 58,452 88,520 L332,520 C362,452 370,394 354,336 C330,244 282,178 210,95 Z" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/>
+          <path d="M210,150 C156,216 120,268 102,342 C90,390 96,436 116,520 L304,520 C324,436 330,390 318,342 C300,268 264,216 210,150 Z" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5"/>
+          <path d="M210,205 C174,254 150,292 138,348 C130,384 134,420 146,480" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+          <path d="M210,205 C246,254 270,292 282,348 C290,384 286,420 274,480" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+          <circle cx="210" cy="40" r="4" fill="rgba(255,255,255,.5)"/>
+        </svg>
+        <div class="admin-login-visual-copy">
+          <span class="admin-login-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
+          <h2>Desa Kale Ko'mara</h2>
+          <p>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</p>
+        </div>
+      </div>
+
+      <form class="admin-login-form" id="login-form">
+        <p class="admin-login-eyebrow">Panel internal</p>
+        <h1>Masuk sebagai admin</h1>
+        <p class="admin-login-desc">Khusus perangkat desa yang berwenang mengelola konten dan data situs.</p>
+
+        <label class="admin-field admin-field-icon">
+          <span>Email</span>
+          <span class="admin-input-wrap">
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <input type="email" id="login-email" autocomplete="username" placeholder="nama@email.com" required>
+          </span>
+        </label>
+        <label class="admin-field admin-field-icon">
+          <span>Kata sandi</span>
+          <span class="admin-input-wrap">
+            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+            <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••" required>
+            <button type="button" class="admin-toggle-password" id="toggle-password" aria-label="Tampilkan kata sandi"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+          </span>
+        </label>
+
+        <button class="button button-primary admin-login-submit" type="submit">
+          <span>Masuk</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
+        <p class="admin-status is-error" id="login-error" hidden><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <span></span></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ APLIKASI ADMIN ============ -->
+  <div id="admin-app" hidden>
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="admin-brand">
+          <span class="admin-brand-mark"><img src="assets/icon.png" alt=""></span>
+          <div>
+            <strong>Admin Panel</strong>
+            <small>Desa Kale Ko'mara</small>
+          </div>
+        </div>
+        <div class="admin-header-actions">
+          <a class="admin-ghost-link" href="index.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Lihat situs</a>
+          <button class="admin-ghost-link" id="logout-btn" type="button"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Keluar</button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="admin-tabs" id="admin-tabs">
+      <button class="admin-tab active" type="button" data-tab="berita"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Berita</button>
+      <button class="admin-tab" type="button" data-tab="galeri"><i class="fa-solid fa-images" aria-hidden="true"></i> Galeri</button>
+      <button class="admin-tab" type="button" data-tab="struktur"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> Struktur</button>
+      <button class="admin-tab" type="button" data-tab="statistik"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Statistik &amp; Dusun</button>
+      <button class="admin-tab" type="button" data-tab="penduduk"><i class="fa-solid fa-users" aria-hidden="true"></i> Data Penduduk</button>
+      <button class="admin-tab" type="button" data-tab="anggaran"><i class="fa-solid fa-coins" aria-hidden="true"></i> Anggaran</button>
+    </nav>
+
+    <main class="admin-main">
+
+      <!-- ============ BERITA ============ -->
+      <section class="admin-panel" data-panel="berita">
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Daftar berita</h2><button class="button button-primary" id="berita-new-btn" type="button">+ Berita baru</button></div>
+            <div id="berita-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="berita-form-title">Berita baru</h2>
+            <form id="berita-form">
+              <label class="admin-field"><span>Judul</span><input type="text" id="berita-title" required></label>
+              <label class="admin-field"><span>Slug (untuk alamat URL)</span><input type="text" id="berita-slug" required pattern="[a-z0-9-]+" title="Huruf kecil, angka, dan tanda hubung saja"></label>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Kategori</span>
+                  <select id="berita-category">
+                    <option value="kegiatan">Kegiatan</option>
+                    <option value="pengumuman">Pengumuman</option>
+                    <option value="pelayanan">Pelayanan</option>
+                  </select>
+                </label>
+                <label class="admin-field"><span>Tanggal</span><input type="date" id="berita-date" required></label>
+              </div>
+              <label class="admin-field">
+                <span>Gambar sampul</span>
+                <input type="file" id="berita-image-file" accept="image/*">
+                <input type="hidden" id="berita-image-url">
+              </label>
+              <div class="admin-image-preview" id="berita-image-preview"></div>
+              <label class="admin-field"><span>Ringkasan singkat</span><textarea id="berita-excerpt" rows="2" required></textarea></label>
+              <label class="admin-field"><span>Isi lengkap — satu paragraf per baris</span><textarea id="berita-content" rows="7" required></textarea></label>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan berita</button>
+                <button class="button" type="button" id="berita-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="berita-delete-btn" hidden>Hapus</button>
+              </div>
+              <p class="admin-status" id="berita-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ GALERI ============ -->
+      <section class="admin-panel" data-panel="galeri" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Daftar galeri</h2><button class="button button-primary" id="galeri-new-btn" type="button">+ Item baru</button></div>
+            <div id="galeri-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="galeri-form-title">Item galeri baru</h2>
+            <form id="galeri-form">
+              <label class="admin-field"><span>Judul</span><input type="text" id="galeri-title" required></label>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Kategori</span>
+                  <select id="galeri-category">
+                    <option value="kegiatan">Kegiatan</option>
+                    <option value="lingkungan">Lingkungan</option>
+                    <option value="warga">Warga</option>
+                  </select>
+                </label>
+                <label class="admin-field"><span>Ukuran kartu</span>
+                  <select id="galeri-size">
+                    <option value="">Normal</option>
+                    <option value="wide">Lebar</option>
+                    <option value="tall">Tinggi</option>
+                  </select>
+                </label>
+              </div>
+              <label class="admin-field"><span>Deskripsi (opsional)</span><textarea id="galeri-description" rows="2"></textarea></label>
+              <label class="admin-field">
+                <span>Tambah foto (bisa pilih beberapa sekaligus)</span>
+                <input type="file" id="galeri-image-file" accept="image/*" multiple>
+              </label>
+              <div class="admin-image-chips" id="galeri-image-chips"></div>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan item</button>
+                <button class="button" type="button" id="galeri-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="galeri-delete-btn" hidden>Hapus</button>
+              </div>
+              <p class="admin-status" id="galeri-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ STRUKTUR ============ -->
+      <section class="admin-panel" data-panel="struktur" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Struktur pemerintahan</h2><button class="button button-primary" id="struktur-new-btn" type="button">+ Perangkat baru</button></div>
+            <p class="admin-hint">Urutan tampil di situs mengikuti kolom "Urutan" di bawah. Tingkatan (pimpinan/kaur &amp; kasi/staf/kadus) dihitung otomatis dari teks jabatan, sama seperti di situs utama.</p>
+            <div id="struktur-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="struktur-form-title">Perangkat baru</h2>
+            <form id="struktur-form">
+              <label class="admin-field"><span>Nama</span><input type="text" id="struktur-nama" required></label>
+              <label class="admin-field"><span>Jabatan</span><input type="text" id="struktur-jabatan" required placeholder="mis. Kaur Keuangan / Staf Kasi Pelayanan / Kadus Komara"></label>
+              <label class="admin-field"><span>Urutan tampil</span><input type="number" id="struktur-sort" value="0" min="0"></label>
+              <label class="admin-field">
+                <span>Foto</span>
+                <input type="file" id="struktur-foto-file" accept="image/*">
+                <input type="hidden" id="struktur-foto-url">
+              </label>
+              <div class="admin-image-preview" id="struktur-foto-preview"></div>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan</button>
+                <button class="button" type="button" id="struktur-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="struktur-delete-btn" hidden>Hapus</button>
+              </div>
+              <p class="admin-status" id="struktur-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ STATISTIK & DUSUN ============ -->
+      <section class="admin-panel" data-panel="statistik" hidden>
+        <div class="admin-layout">
+          <div class="admin-form-col">
+            <h2>Statistik desa</h2>
+            <p class="admin-hint">Total penduduk, jumlah KK, dan persentase laki-laki/perempuan sekarang dihitung <strong>otomatis</strong> dari data di tab "Data Penduduk". Yang diisi manual di sini hanya data fisik wilayah.</p>
+            <div class="admin-stat-readout" id="statistik-readout"></div>
+            <form id="statistik-form">
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Luas wilayah</span><input type="number" id="stat-luas" min="0" step="0.01" required></label>
+                <label class="admin-field"><span>Satuan luas</span><input type="text" id="stat-satuan" required></label>
+              </div>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan luas wilayah</button>
+              </div>
+              <p class="admin-status" id="statistik-status" hidden></p>
+            </form>
+          </div>
+
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Daftar dusun</h2><button class="button button-primary" id="dusun-new-btn" type="button">+ Dusun baru</button></div>
+            <p class="admin-hint">Jumlah penduduk per dusun dihitung otomatis dari data KK yang terdaftar di dusun tersebut (tab "Data Penduduk").</p>
+            <div id="dusun-list" class="admin-list"></div>
+            <form id="dusun-form" class="admin-inline-form" hidden>
+              <h3 id="dusun-form-title">Dusun baru</h3>
+              <label class="admin-field"><span>Nama dusun</span><input type="text" id="dusun-nama" required></label>
+              <label class="admin-field"><span>Urutan</span><input type="number" id="dusun-sort" value="0" min="0"></label>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan</button>
+                <button class="button" type="button" id="dusun-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="dusun-delete-btn" hidden>Hapus</button>
+              </div>
+              <p class="admin-status" id="dusun-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DATA PENDUDUK (KK & ANGGOTA KELUARGA) ============ -->
+      <section class="admin-panel" data-panel="penduduk" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Daftar KK</h2><button class="button button-primary" id="keluarga-new-btn" type="button">+ KK baru</button></div>
+            <label class="admin-field"><span>Cari No. KK / nama kepala keluarga</span><input type="text" id="keluarga-search" placeholder="Ketik untuk mencari..."></label>
+            <div id="keluarga-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="keluarga-form-title">KK baru</h2>
+            <form id="keluarga-form">
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Nomor KK</span><input type="text" id="keluarga-no-kk" required></label>
+                <label class="admin-field"><span>Nama kepala keluarga</span><input type="text" id="keluarga-kepala" required></label>
+              </div>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Dusun</span><select id="keluarga-dusun"></select></label>
+                <label class="admin-field"><span>Alamat</span><input type="text" id="keluarga-alamat"></label>
+              </div>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan KK</button>
+                <button class="button" type="button" id="keluarga-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="keluarga-delete-btn" hidden>Hapus KK ini</button>
+              </div>
+              <p class="admin-status" id="keluarga-status" hidden></p>
+            </form>
+
+            <div id="anggota-section" hidden>
+              <h2>Anggota keluarga</h2>
+              <div id="anggota-list" class="admin-list"></div>
+              <form id="anggota-form" class="admin-inline-form">
+                <h3 id="anggota-form-title">Tambah anggota</h3>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Nama</span><input type="text" id="anggota-nama" required></label>
+                  <label class="admin-field"><span>NIK (opsional)</span><input type="text" id="anggota-nik"></label>
+                </div>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Jenis kelamin</span>
+                    <select id="anggota-jk">
+                      <option value="L">Laki-laki</option>
+                      <option value="P">Perempuan</option>
+                    </select>
+                  </label>
+                  <label class="admin-field"><span>Tanggal lahir</span><input type="date" id="anggota-tgl-lahir"></label>
+                </div>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Status hubungan</span>
+                    <select id="anggota-status">
+                      <option>Kepala Keluarga</option>
+                      <option>Istri</option>
+                      <option>Suami</option>
+                      <option>Anak</option>
+                      <option>Famili Lain</option>
+                    </select>
+                  </label>
+                  <label class="admin-field"><span>Pekerjaan (opsional)</span><input type="text" id="anggota-pekerjaan"></label>
+                </div>
+                <div class="admin-form-actions">
+                  <button class="button button-primary" type="submit">Simpan anggota</button>
+                  <button class="button" type="button" id="anggota-cancel-btn">Batal</button>
+                  <button class="button button-danger" type="button" id="anggota-delete-btn" hidden>Hapus anggota ini</button>
+                </div>
+                <p class="admin-status" id="anggota-status" hidden></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANGGARAN ============ -->
+      <section class="admin-panel" data-panel="anggaran" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Tahun anggaran</h2><button class="button button-primary" id="anggaran-new-btn" type="button">+ Tahun baru</button></div>
+            <div id="anggaran-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="anggaran-form-title">Tahun anggaran baru</h2>
+            <form id="anggaran-form">
+              <label class="admin-field"><span>Tahun</span><input type="text" id="anggaran-tahun" required placeholder="mis. 2026"></label>
+
+              <fieldset class="admin-fieldset">
+                <legend>Dokumen APBDes (PDF)</legend>
+                <label class="admin-field"><span>Nama file</span><input type="text" id="anggaran-dokumen-nama" placeholder="mis. APBDes Realisasi Kale Ko'mara 2026.pdf"></label>
+                <label class="admin-field"><span>Upload PDF (opsional, boleh diisi link manual di bawah)</span><input type="file" id="anggaran-dokumen-file" accept="application/pdf"></label>
+                <input type="hidden" id="anggaran-dokumen-url">
+                <label class="admin-field"><span>Keterangan ukuran</span><input type="text" id="anggaran-dokumen-ukuran" placeholder="mis. 1.2 MB · Dokumen Resmi"></label>
+              </fieldset>
+
+              <fieldset class="admin-fieldset">
+                <legend>Pendapatan</legend>
+                <div id="anggaran-pendapatan-rows" class="admin-budget-rows"></div>
+                <button class="button" type="button" id="anggaran-pendapatan-add">+ Tambah baris pendapatan</button>
+              </fieldset>
+
+              <fieldset class="admin-fieldset">
+                <legend>Belanja</legend>
+                <div id="anggaran-belanja-rows" class="admin-budget-rows"></div>
+                <button class="button" type="button" id="anggaran-belanja-add">+ Tambah baris belanja</button>
+              </fieldset>
+
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan anggaran</button>
+                <button class="button" type="button" id="anggaran-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="anggaran-delete-btn" hidden>Hapus tahun ini</button>
+              </div>
+              <p class="admin-status" id="anggaran-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Template baris pendapatan/belanja (dipakai oleh admin.js) -->
+  <template id="budget-row-template">
+    <div class="admin-budget-row">
+      <input type="text" class="budget-row-label" placeholder="Label, mis. Dana Desa" required>
+      <input type="number" class="budget-row-nilai" placeholder="Nilai (Rp)" min="0" required>
+      <button class="admin-row-remove" type="button" aria-label="Hapus baris">✕</button>
+    </div>
+  </template>
+
+</body>
+</html>

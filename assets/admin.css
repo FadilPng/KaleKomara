@@ -1,0 +1,1332 @@
+/* =========================================================
+   ADMIN PANEL — DESA KALE KO'MARA
+   Sinking dengan style.css – konsisten warna, font, dan nuansa
+   ========================================================= */
+
+   .admin-body {
+    background: var(--sage-light);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .admin-body h1, .admin-body h2, .admin-body h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    color: var(--ink);
+  }
+  
+  /* =========================================================
+     LAYAR LOGIN (tetap bagus, tanpa perubahan besar)
+     ========================================================= */
+  .admin-login {
+    display: grid; place-items: center;
+    min-height: 100vh; padding: 24px;
+    background: radial-gradient(1100px 620px at 50% -10%, #eef4ee 0%, var(--sage-light) 62%);
+  }
+  .admin-login[hidden] { display: none; }
+  
+  .admin-login-card {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) minmax(0, 380px);
+    width: 100%; max-width: 700px;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  
+  .admin-login-visual {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 40px 32px;
+    background: linear-gradient(175deg, var(--green-2), var(--green) 65%);
+    color: var(--white); overflow: hidden;
+  }
+  .admin-login-contours { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .admin-login-visual-copy { position: relative; z-index: 1; }
+  .admin-login-mark {
+    display: inline-grid; place-items: center;
+    width: 52px; height: 52px; margin-bottom: 20px;
+    border-radius: 50%; overflow: hidden;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+  }
+  .admin-login-mark img { width: 100%; height: 100%; object-fit: cover; }
+  .admin-login-visual-copy h2 { margin: 0 0 8px; color: var(--white); font-size: 24px; }
+  .admin-login-visual-copy p { margin: 0; color: rgba(255,255,255,.72); font-size: 12.5px; }
+  
+  .admin-login-form {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 48px 40px;
+  }
+  .admin-login-eyebrow {
+    margin: 0 0 10px; color: var(--orange);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.8px;
+  }
+  .admin-login-form h1 { margin: 0 0 8px; font-size: 26px; }
+  .admin-login-desc { margin: 0 0 28px; color: var(--ink-soft); font-size: 13px; }
+  
+  .admin-field-icon .admin-input-wrap { position: relative; display: flex; align-items: center; }
+  .admin-field-icon .admin-input-wrap i:first-child {
+    position: absolute; left: 14px; color: var(--ink-soft); font-size: 13px; pointer-events: none;
+  }
+  .admin-field-icon input { padding-left: 38px !important; }
+  .admin-toggle-password {
+    position: absolute; right: 6px; width: 32px; height: 32px;
+    display: grid; place-items: center;
+    color: var(--ink-soft); background: transparent; border: 0;
+    border-radius: 50%; cursor: pointer;
+  }
+  .admin-toggle-password:hover { color: var(--green); background: var(--sage-light); }
+  
+  .admin-login-submit {
+    width: 100%; justify-content: space-between;
+    margin-top: 8px; padding: 0 22px;
+    background: var(--green); color: var(--white);
+    border-radius: var(--radius-sm);
+  }
+  .admin-login-submit:hover { background: var(--green-2); }
+  .admin-login-submit:disabled { opacity: .6; pointer-events: none; }
+  .admin-login-submit i { font-size: 12px; transition: transform .2s var(--ease); }
+  .admin-login-submit:hover i { transform: translateX(3px); }
+  
+  @media (max-width: 680px) {
+    .admin-login-card { grid-template-columns: 1fr; max-width: 400px; }
+    .admin-login-visual { padding: 28px 28px 24px; min-height: 150px; justify-content: center; }
+    .admin-login-visual-copy p { display: none; }
+    .admin-login-form { padding: 34px 28px 38px; }
+  }
+  
+  /* =========================================================
+     HEADER – disarankan menyamai index: krem transparan
+     ========================================================= */
+  .admin-header {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(251,250,246,0.92);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+  }
+  .admin-header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 24px;
+  }
+  .admin-brand { display: flex; align-items: center; gap: 12px; }
+  .admin-brand-mark { width: 40px; overflow: hidden; flex: none; }
+  .admin-brand-mark img { height: 100%; object-fit: cover; }
+  .admin-brand strong { display: block; color: var(--green); font-size: 14.5px; line-height: 1.3; }
+  .admin-brand small { display: block; color: var(--ink-soft); font-size: 11.5px; }
+  
+  .admin-header-actions { display: flex; align-items: center; gap: 8px; }
+  .admin-ghost-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    color: var(--green);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer;
+    transition: background .2s var(--ease), color .2s var(--ease);
+  }
+  .admin-ghost-link:hover {
+    color: var(--green);
+    background: var(--sage-light);
+    border-color: transparent;
+  }
+  .admin-ghost-link i { font-size: 11px; }
+  
+  /* =========================================================
+     TAB NAV – aktif dengan sage-light dan teks hijau
+     ========================================================= */
+  .admin-tabs {
+    display: flex; gap: 4px;
+    max-width: 1280px; margin: 0 auto;
+    padding: 16px 24px 0;
+    overflow-x: auto;
+  }
+  .admin-tab {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 0;
+    border-radius: 10px 10px 0 0;
+    font-size: 13px; font-weight: 700;
+    white-space: nowrap; cursor: pointer;
+    transition: background .18s var(--ease), color .18s var(--ease);
+  }
+  .admin-tab i { font-size: 12px; opacity: .85; }
+  .admin-tab:hover { color: var(--green); background: var(--sage-light); }
+  .admin-tab.active {
+    color: var(--green);
+    background: var(--paper);
+    box-shadow: inset 0 2px 0 var(--orange);
+  }
+  .admin-tab.active i { color: var(--orange); opacity: 1; }
+  
+  /* =========================================================
+     MAIN CONTENT
+     ========================================================= */
+  .admin-main {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .admin-panel {
+    background: var(--paper);
+    border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow);
+    padding: 34px;
+  }
+  
+  /* =========================================================
+     LAYOUT DUA KOLOM
+     ========================================================= */
+  .admin-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .admin-list-col {
+    position: relative;
+    padding-right: 40px;
+  }
+  .admin-list-col::after {
+    content: "";
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 1px; background: var(--line);
+  }
+  
+  .admin-list-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 6px;
+  }
+  .admin-list-head h2 { margin: 0; font-size: 19px; }
+  .admin-hint {
+    margin: 6px 0 18px;
+    padding: 10px 14px;
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    color: var(--ink-soft);
+    font-size: 12px; line-height: 1.6;
+  }
+  .admin-hint i { margin-right: 6px; color: var(--green-2); }
+  
+  .admin-stat-readout {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 24px;
+  }
+  .admin-stat-readout div {
+    padding: 16px 10px;
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    border-top: 2px solid var(--orange);
+  }
+  .admin-stat-readout strong { display: block; font-family: Georgia, serif; font-size: 22px; color: var(--green); }
+  .admin-stat-readout span { display: block; margin-top: 4px; color: var(--ink-soft); font-size: 10px; text-transform: uppercase; letter-spacing: .5px; }
+  
+  .admin-list {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 640px; overflow-y: auto; padding-right: 4px;
+  }
+  .admin-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    padding: 13px 16px;
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: border-color .16s var(--ease), background .16s var(--ease);
+  }
+  .admin-row:hover { background: var(--sage); }
+  .admin-row.is-active {
+    border-color: var(--green-2);
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--green-2) inset;
+  }
+  .admin-row-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .admin-row-main strong { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-row-main span { color: var(--ink-soft); font-size: 11.5px; }
+  .admin-row-actions { display: flex; gap: 6px; flex: none; }
+  .admin-row-actions .button {
+    min-height: 34px; padding: 0 14px;
+    font-size: 11.5px; border-radius: 7px;
+  }
+  
+  .admin-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 36px 12px;
+    color: var(--ink-soft); font-size: 13px; text-align: center;
+  }
+  .admin-empty i { font-size: 20px; color: var(--sage); }
+  
+  /* =========================================================
+     FORM – disesuaikan dengan gaya input index
+     ========================================================= */
+  .admin-form-col h2 { margin: 0 0 6px; font-size: 19px; }
+  .admin-form-eyebrow { display: block; margin-bottom: 10px; color: var(--orange); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; }
+  
+  .admin-field { display: block; margin-bottom: 16px; }
+  .admin-field span:not(.admin-input-wrap) {
+    display: block; margin-bottom: 6px;
+    color: var(--ink-soft);
+    font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .admin-field input[type="text"],
+  .admin-field input[type="email"],
+  .admin-field input[type="password"],
+  .admin-field input[type="date"],
+  .admin-field input[type="number"],
+  .admin-field input[type="file"],
+  .admin-field select,
+  .admin-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-family: inherit;
+    transition: border-color .16s var(--ease), box-shadow .16s var(--ease);
+  }
+  .admin-field textarea { resize: vertical; line-height: 1.55; }
+  .admin-field input:focus,
+  .admin-field select:focus,
+  .admin-field textarea:focus {
+    outline: none;
+    border-color: var(--green-2);
+    box-shadow: 0 0 0 3px rgba(36,87,72,.14);
+  }
+  .admin-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  
+  .admin-fieldset {
+    margin: 0 0 20px;
+    padding: 18px 18px 8px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+  }
+  .admin-fieldset legend {
+    padding: 0 8px;
+    color: var(--green);
+    font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .6px;
+  }
+  
+  .admin-form-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  
+  /* Tombol utama – samakan dengan index */
+  .button-primary {
+    color: var(--green);
+    background: var(--cream);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0 20px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background .2s var(--ease), transform .2s var(--ease);
+  }
+  .button-primary:hover {
+    background: var(--white);
+    transform: translateY(-1px);
+  }
+  
+  /* Tombol sekunder */
+  .button {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0 16px;
+    height: 40px;
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .2s var(--ease), border-color .2s var(--ease);
+  }
+  .button:hover {
+    background: var(--sage-light);
+    border-color: var(--green-2);
+  }
+  
+  /* Tombol hapus */
+  .button-danger {
+    color: #a8341f;
+    border-color: rgba(168,52,31,.3);
+    background: #fbe9e5;
+  }
+  .button-danger:hover {
+    color: var(--white);
+    background: #a8341f;
+    border-color: #a8341f;
+  }
+  
+  .admin-status {
+    display: flex; align-items: center; gap: 9px;
+    margin: 16px 0 0;
+    padding: 11px 15px;
+    border-radius: var(--radius-sm);
+    background: #e8f2ec;
+    color: var(--green-2);
+    font-size: 13px;
+  }
+  .admin-status.is-error { background: #fbe9e5; color: #a8341f; }
+  .admin-status i { font-size: 13px; }
+  
+  /* Preview & chip gambar */
+  .admin-image-preview { margin: -6px 0 16px; }
+  .admin-image-preview img {
+    width: 150px; height: 112px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background: var(--sage);
+  }
+  .admin-image-preview p { margin: 0; color: var(--ink-soft); font-size: 12px; }
+  
+  .admin-image-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 18px; }
+  .admin-image-chip {
+    position: relative; width: 92px; height: 92px;
+    border-radius: var(--radius-sm); overflow: hidden;
+    background: var(--sage);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .admin-image-chip img { width: 100%; height: 100%; object-fit: cover; }
+  .admin-image-chip button {
+    position: absolute; top: 4px; right: 4px;
+    width: 21px; height: 21px;
+    display: grid; place-items: center;
+    color: var(--white);
+    background: rgba(23,35,31,.65);
+    border: 0; border-radius: 50%;
+    font-size: 11px; cursor: pointer; line-height: 1;
+  }
+  .admin-image-chip button:hover { background: #a8341f; }
+  
+  /* Baris anggaran dinamis */
+  .admin-budget-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .admin-budget-row { display: grid; grid-template-columns: minmax(0,1fr) 160px auto; gap: 8px; align-items: center; }
+  .admin-budget-row input {
+    padding: 10px 12px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px; font-family: inherit;
+  }
+  .admin-budget-row input:focus {
+    outline: none;
+    border-color: var(--green-2);
+    box-shadow: 0 0 0 3px rgba(36,87,72,.14);
+  }
+  .admin-row-remove {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    color: #a8341f;
+    background: #fbe9e5;
+    border: 0; border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .admin-row-remove:hover { background: #a8341f; color: var(--white); }
+  
+  /* Form inline */
+  .admin-inline-form {
+    margin-top: 20px;
+    padding: 18px;
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+  }
+  .admin-inline-form h3 { margin: 0 0 14px; font-size: 15px; }
+  
+  #anggota-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px dashed var(--line);
+  }
+  #anggota-section h2 { font-size: 16px; }
+  
+  /* Responsive */
+  @media (max-width: 980px) {
+    .admin-layout { grid-template-columns: 1fr; }
+    .admin-list-col { padding-right: 0; }
+    .admin-list-col::after { display: none; }
+    .admin-field-row { grid-template-columns: 1fr; }
+    .admin-budget-row { grid-template-columns: 1fr; }
+    .admin-stat-readout { grid-template-columns: repeat(2, 1fr); }
+  }
+  /* =========================================================
+   REDESIGN FINAL — ADMIN SELARAS DENGAN INDEX
+   Tambahkan di PALING BAWAH admin.css
+   ========================================================= */
+
+.admin-body {
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* =========================================================
+   LOGIN — lebih dekat dengan hero index
+   ========================================================= */
+
+.admin-login {
+  min-height: 100vh;
+  padding: 32px;
+  background:
+    linear-gradient(135deg, rgba(23, 61, 50, .08), transparent 42%),
+    var(--cream);
+}
+
+.admin-login-card {
+  max-width: 1040px;
+  min-height: 620px;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 0;
+  box-shadow: 0 30px 80px rgba(23, 61, 50, .16);
+}
+
+.admin-login-visual {
+  min-height: 620px;
+  padding: 55px;
+  justify-content: flex-end;
+  background:
+    linear-gradient(90deg, rgba(10, 31, 25, .9), rgba(23, 61, 50, .56)),
+    var(--green);
+}
+
+.admin-login-visual::after {
+  content: "RUANG INFORMASI DESA";
+  position: absolute;
+  top: 42px;
+  left: 55px;
+  color: rgba(255,255,255,.58);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.admin-login-contours {
+  opacity: .7;
+}
+
+.admin-login-mark {
+  width: 68px;
+  height: 68px;
+  margin-bottom: 28px;
+  border-radius: 0;
+  background: rgba(255,255,255,.1);
+}
+
+.admin-login-visual-copy h2 {
+  max-width: 300px;
+  margin-bottom: 14px;
+  color: var(--cream);
+  font-size: 36px;
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.admin-login-visual-copy p {
+  max-width: 270px;
+  color: #c8d8d0;
+  font-size: 13px;
+}
+
+.admin-login-form {
+  padding: 65px 58px;
+  background: var(--paper);
+}
+
+.admin-login-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-login-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--orange);
+}
+
+.admin-login-form h1 {
+  margin-bottom: 14px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 42px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+}
+
+.admin-login-desc {
+  max-width: 330px;
+  margin-bottom: 38px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.admin-field-icon .admin-input-wrap i:first-child {
+  left: 0;
+}
+
+.admin-field-icon input {
+  padding-left: 27px !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--line) !important;
+  background: transparent !important;
+}
+
+.admin-field-icon input:focus {
+  box-shadow: none !important;
+  border-bottom-color: var(--green) !important;
+}
+
+.admin-login-submit {
+  min-height: 52px;
+  margin-top: 18px;
+  border-radius: 0;
+  background: var(--green);
+}
+
+.admin-login-submit:hover {
+  background: var(--green-2);
+}
+
+/* =========================================================
+   HEADER ADMIN — sama seperti header index
+   ========================================================= */
+
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(251, 250, 246, .94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+}
+
+.admin-header-inner {
+  max-width: var(--container);
+  min-height: var(--header-h);
+  padding: 0;
+}
+
+.admin-brand {
+  gap: 12px;
+}
+
+.admin-brand-mark {
+  width: 46px;
+  height: 46px;
+}
+
+.admin-brand strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-brand small {
+  margin-top: 3px;
+  color: #78817c;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+}
+
+.admin-header-actions {
+  gap: 24px;
+}
+
+.admin-ghost-link {
+  padding: 8px 0;
+  color: var(--green);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 13px;
+}
+
+.admin-ghost-link:hover {
+  color: var(--orange);
+  background: transparent;
+}
+
+/* =========================================================
+   TAB — seperti navigasi index, bukan pill dashboard
+   ========================================================= */
+
+.admin-tabs {
+  max-width: var(--container);
+  gap: 30px;
+  padding: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.admin-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-tab {
+  position: relative;
+  padding: 18px 0 16px;
+  color: #68736d;
+  background: transparent;
+  border-radius: 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-tab::after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--orange);
+  transition: right .25s var(--ease);
+}
+
+.admin-tab:hover,
+.admin-tab.active {
+  color: var(--green);
+  background: transparent;
+}
+
+.admin-tab.active::after {
+  right: 0;
+}
+
+.admin-tab.active i {
+  color: var(--orange);
+}
+
+/* =========================================================
+   AREA KONTEN
+   ========================================================= */
+
+.admin-main {
+  max-width: var(--container);
+  padding: 64px 0 110px;
+}
+
+.admin-panel {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.admin-panel::before {
+  content: "PANEL INTERNAL";
+  display: block;
+  margin-bottom: 12px;
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.admin-layout {
+  grid-template-columns: .85fr 1.15fr;
+  gap: 70px;
+}
+
+.admin-list-col {
+  padding-right: 70px;
+}
+
+.admin-list-col::after {
+  background: var(--line);
+}
+
+.admin-list-head {
+  align-items: flex-end;
+  margin-bottom: 25px;
+}
+
+.admin-list-head h2,
+.admin-form-col h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 38px;
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.admin-form-col > h2 {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* =========================================================
+   BUTTON — bentuk seperti index
+   ========================================================= */
+
+.admin-body .button {
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--green);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-body .button:hover {
+  color: var(--green);
+  background: var(--sage-light);
+  border-color: var(--green);
+}
+
+.admin-body .button-primary,
+.admin-body .admin-form-actions .button-primary {
+  color: var(--green);
+  background: var(--cream);
+  border-color: transparent;
+}
+
+.admin-body .button-primary:hover,
+.admin-body .admin-form-actions .button-primary:hover {
+  color: var(--green);
+  background: var(--white);
+  border-color: var(--green);
+}
+
+.admin-body .button-danger {
+  color: #a8341f;
+  background: transparent;
+  border-color: rgba(168, 52, 31, .35);
+}
+
+.admin-body .button-danger:hover {
+  color: var(--white);
+  background: #a8341f;
+}
+
+/* =========================================================
+   LIST ITEM — model garis dan blok index
+   ========================================================= */
+
+.admin-list {
+  gap: 0;
+  max-height: none;
+  border-top: 1px solid var(--line);
+}
+
+.admin-row {
+  min-height: 76px;
+  padding: 16px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+
+.admin-row:hover {
+  background: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.admin-row.is-active {
+  padding-left: 12px;
+  background: var(--sage-light);
+  border: 0;
+  box-shadow: inset 3px 0 0 var(--orange);
+}
+
+.admin-row-main {
+  gap: 5px;
+}
+
+.admin-row-main strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.admin-row-main span {
+  color: #7b847f;
+  font-size: 11px;
+}
+
+.admin-row-actions .button {
+  min-height: 34px;
+  border-radius: 2px;
+}
+
+/* =========================================================
+   HINT & STATISTIK
+   ========================================================= */
+
+.admin-hint {
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  color: var(--ink-soft);
+  background: var(--sage-light);
+  border-left: 2px solid var(--orange);
+  border-radius: 0;
+}
+
+.admin-stat-readout {
+  gap: 0;
+  margin: 28px 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.admin-stat-readout div {
+  min-height: 100px;
+  padding: 18px 12px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0;
+}
+
+.admin-stat-readout strong {
+  color: var(--green);
+  font-size: 26px;
+}
+
+/* =========================================================
+   FORM — lebih minimal seperti index
+   ========================================================= */
+
+.admin-field {
+  margin-bottom: 22px;
+}
+
+.admin-field span:not(.admin-input-wrap) {
+  margin-bottom: 8px;
+  color: #7b847f;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+}
+
+.admin-field input[type="text"],
+.admin-field input[type="email"],
+.admin-field input[type="password"],
+.admin-field input[type="date"],
+.admin-field input[type="number"],
+.admin-field input[type="file"],
+.admin-field select,
+.admin-field textarea {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--white);
+}
+
+.admin-field input:focus,
+.admin-field select:focus,
+.admin-field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(23, 61, 50, .08);
+}
+
+.admin-fieldset {
+  padding: 22px 20px 8px;
+  border-radius: 0;
+  border: 1px solid var(--line);
+}
+
+.admin-fieldset legend {
+  color: var(--orange);
+  letter-spacing: 1.2px;
+}
+
+.admin-inline-form {
+  padding: 24px;
+  border-radius: 0;
+  border: 1px solid var(--line);
+  background: var(--sage-light);
+}
+
+/* Preview */
+.admin-image-preview img {
+  border-radius: 0;
+}
+
+.admin-image-chip {
+  border-radius: 0;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .admin-header-inner,
+  .admin-tabs,
+  .admin-main {
+    width: min(calc(100% - 48px), var(--container));
+  }
+}
+
+@media (max-width: 980px) {
+  .admin-main {
+    padding-top: 48px;
+  }
+
+  .admin-layout {
+    grid-template-columns: 1fr;
+    gap: 55px;
+  }
+
+  .admin-list-col {
+    padding-right: 0;
+  }
+
+  .admin-list-col::after {
+    display: none;
+  }
+
+  .admin-form-col {
+    padding-top: 45px;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 680px) {
+  .admin-login {
+    padding: 16px;
+  }
+
+  .admin-login-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .admin-login-visual {
+    min-height: 260px;
+    padding: 32px;
+  }
+
+  .admin-login-visual::after {
+    top: 25px;
+    left: 32px;
+  }
+
+  .admin-login-visual-copy h2 {
+    font-size: 30px;
+  }
+
+  .admin-login-form {
+    padding: 42px 28px 48px;
+  }
+
+  .admin-login-form h1 {
+    font-size: 34px;
+  }
+
+  .admin-header-inner,
+  .admin-tabs,
+  .admin-main {
+    width: min(calc(100% - 32px), var(--container));
+  }
+
+  .admin-header-inner {
+    min-height: 72px;
+  }
+
+  .admin-header-actions {
+    gap: 10px;
+  }
+
+  .admin-ghost-link {
+    font-size: 0;
+  }
+
+  .admin-ghost-link i {
+    font-size: 14px;
+  }
+
+  .admin-tabs {
+    gap: 24px;
+  }
+
+  .admin-tab {
+    font-size: 11px;
+  }
+
+  .admin-list-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-list-head h2,
+  .admin-form-col > h2 {
+    font-size: 32px;
+  }
+
+  .admin-stat-readout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* =========================================================
+   SMOOTHNESS — animasi & transisi halus, selaras index
+   Taruh di PALING BAWAH admin.css
+   ========================================================= */
+
+/* --- Keyframes --- */
+@keyframes adminRowIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes adminPanelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes adminStatusIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes adminImageIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes adminFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* --- Panel entrance saat tab dipilih --- */
+.admin-panel.is-entering > * {
+  animation: adminPanelIn .5s var(--ease) both;
+}
+.admin-panel.is-entering .admin-list-col {
+  animation-delay: 0s;
+}
+.admin-panel.is-entering .admin-form-col {
+  animation-delay: .07s;
+}
+
+/* --- Row stagger (ditambahkan via JS) --- */
+.admin-row.is-stagger {
+  animation: adminRowIn .38s var(--ease) both;
+  animation-delay: calc(var(--row-i, 0) * 30ms);
+}
+
+/* --- Button hover lift (sama seperti index) --- */
+.admin-body .button {
+  transition:
+    color .22s var(--ease),
+    background .22s var(--ease),
+    border-color .22s var(--ease),
+    transform .22s var(--ease),
+    box-shadow .22s var(--ease) !important;
+}
+.admin-body .button:hover {
+  transform: translateY(-2px);
+}
+.admin-body .button:active {
+  transform: translateY(0);
+  transition-duration: .06s;
+}
+
+/* --- Row hover geser halus --- */
+.admin-row {
+  transition:
+    background .28s var(--ease),
+    padding .28s var(--ease),
+    box-shadow .28s var(--ease),
+    border-color .28s var(--ease),
+    transform .28s var(--ease) !important;
+}
+.admin-row:not(.is-active):hover {
+  transform: translateX(5px);
+}
+
+/* --- Status message slide in --- */
+.admin-status.is-animate {
+  animation: adminStatusIn .35s var(--ease) both;
+}
+
+/* --- Image preview & chip fade in --- */
+.admin-image-preview img {
+  animation: adminImageIn .4s var(--ease) both;
+}
+.admin-image-chip {
+  animation: adminImageIn .3s var(--ease) both;
+}
+
+/* --- Login card entrance --- */
+.admin-login-card {
+  animation: adminPanelIn .55s var(--ease) both;
+}
+
+/* --- Admin app entrance setelah login --- */
+#admin-app.is-entering {
+  animation: adminFadeIn .35s var(--ease) both;
+}
+
+/* --- Tab stagger saat app pertama muncul --- */
+#admin-app.is-entering .admin-tab {
+  animation: adminRowIn .35s var(--ease) both;
+}
+#admin-app.is-entering .admin-tab:nth-child(1) { animation-delay: .08s; }
+#admin-app.is-entering .admin-tab:nth-child(2) { animation-delay: .12s; }
+#admin-app.is-entering .admin-tab:nth-child(3) { animation-delay: .16s; }
+#admin-app.is-entering .admin-tab:nth-child(4) { animation-delay: .20s; }
+#admin-app.is-entering .admin-tab:nth-child(5) { animation-delay: .24s; }
+#admin-app.is-entering .admin-tab:nth-child(6) { animation-delay: .28s; }
+
+/* --- Empty state --- */
+.admin-empty {
+  animation: adminRowIn .4s var(--ease) both;
+}
+
+/* --- Stat readout stagger --- */
+.admin-stat-readout div {
+  animation: adminRowIn .4s var(--ease) both;
+}
+.admin-stat-readout div:nth-child(1) { animation-delay: 0s; }
+.admin-stat-readout div:nth-child(2) { animation-delay: .05s; }
+.admin-stat-readout div:nth-child(3) { animation-delay: .1s; }
+.admin-stat-readout div:nth-child(4) { animation-delay: .15s; }
+
+/* --- Header scroll state --- */
+.admin-header {
+  transition:
+    box-shadow .3s var(--ease),
+    border-color .3s var(--ease) !important;
+}
+.admin-header.scrolled {
+  box-shadow: 0 6px 24px rgba(22, 47, 38, .06);
+}
+
+/* --- Scrollbar halus --- */
+.admin-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sage) transparent;
+}
+.admin-list::-webkit-scrollbar { width: 5px; }
+.admin-list::-webkit-scrollbar-track { background: transparent; }
+.admin-list::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 99px; }
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .admin-panel.is-entering > *,
+  .admin-row.is-stagger,
+  .admin-status.is-animate,
+  .admin-image-preview img,
+  .admin-image-chip,
+  .admin-login-card,
+  #admin-app.is-entering,
+  #admin-app.is-entering .admin-tab,
+  .admin-empty,
+  .admin-stat-readout div {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .admin-body .button:hover,
+  .admin-row:not(.is-active):hover {
+    transform: none;
+  }
+}
+/* =========================================================
+   FIX UX ADMIN — sticky tabs, list scroll, loading, no-shift
+   ========================================================= */
+
+   .admin-status[hidden],
+   .admin-status:not(.is-visible) {
+     display: none !important;
+   }
+   .admin-status.is-visible {
+     display: flex !important;
+   }
+   
+   .admin-tabs {
+     position: sticky;
+     top: var(--header-h);
+     z-index: 19;
+     max-width: none;
+     width: 100%;
+     margin: 0;
+     padding: 0 max(24px, calc((100vw - var(--container)) / 2));
+     background: rgba(251, 250, 246, .96);
+     border-bottom: 1px solid var(--line);
+     backdrop-filter: blur(14px);
+   }
+   
+   .admin-list {
+     max-height: calc(100vh - var(--header-h) - 220px);
+     overflow-x: hidden;
+     overflow-y: auto;
+   }
+   
+   .admin-layout {
+     overflow-x: hidden;
+   }
+   
+   /* Hover tanpa geser layout */
+   .admin-row,
+   .admin-row:hover,
+   .admin-row:not(.is-active):hover {
+     padding-left: 0 !important;
+     padding-right: 0 !important;
+     transform: none !important;
+   }
+   .admin-row:hover {
+     background: var(--sage-light);
+   }
+   .admin-row.is-active {
+     padding-left: 12px !important;
+     box-shadow: inset 3px 0 0 var(--orange);
+   }
+   
+   .admin-body .button.is-loading,
+   .admin-body .button:disabled,
+   .admin-login-submit:disabled {
+     opacity: .72;
+     pointer-events: none;
+     transform: none !important;
+   }
+   
+   .admin-upload-indicator {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     margin: 0 0 12px;
+     padding: 10px 12px;
+     color: var(--green);
+     background: var(--sage-light);
+     border-left: 2px solid var(--orange);
+     font-size: 12px;
+     font-weight: 700;
+   }
+   
+   .admin-field.is-uploading input[type="file"] {
+     pointer-events: none;
+     opacity: .6;
+   }
+   
+   @media (max-width: 720px) {
+     .admin-tabs {
+       padding-inline: 16px;
+     }
+     .admin-list {
+       max-height: min(420px, 55vh);
+     }
+   }
+   
+   @media (prefers-reduced-motion: reduce) {
+     .admin-row,
+     .admin-body .button {
+       transform: none !important;
+     }
+   }

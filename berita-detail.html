@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173d32">
+  <title>Berita — Desa Kale Ko'mara</title>
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="assets/icon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/js/supabase-client.js" defer></script>
+  <script src="assets/js/berita-detail.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Lewati ke konten</a>
+
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html#home" aria-label="Desa Kale Ko'mara, halaman Home">
+        <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
+        <span class="brand-copy">
+          <strong>Desa Kale Ko'mara</strong>
+          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Utara</small>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka menu navigasi">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="primary-nav" id="primary-nav" aria-label="Navigasi utama">
+        <a class="nav-link" href="index.html#home">Home</a>
+        <a class="nav-link active" href="index.html#berita">Berita</a>
+        <a class="nav-link" href="index.html#galeri">Galeri</a>
+        <a class="nav-link" href="index.html#info">Info</a>
+        <a class="nav-link" href="index.html#anggaran">Anggaran</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="page-panel active" data-page="berita-detail">
+      <div class="page-hero article-hero">
+        <div class="container page-hero-inner article-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> <span id="article-category">Berita</span></p>
+            <h1 id="article-title">Memuat berita...</h1>
+          </div>
+          <p id="article-meta"></p>
+        </div>
+      </div>
+
+      <div class="container content-block article-content">
+        <a class="text-link dark back-link" href="index.html#berita"><span aria-hidden="true">←</span> Kembali ke semua berita</a>
+
+        <div class="article-image">
+          <img id="article-image" src="" alt="">
+        </div>
+
+        <div class="article-body" id="article-body"></div>
+
+        <p class="article-not-found" id="article-not-found" hidden>
+          Berita yang Anda cari tidak ditemukan. Silakan kembali ke
+          <a class="text-link dark" href="index.html#berita">daftar berita</a>.
+        </p>
+      </div>
+
+      <section class="container section-block latest-section" id="related-section">
+        <div class="section-heading reveal">
+          <div>
+            <p class="section-kicker">Baca juga</p>
+            <h2>Berita lainnya</h2>
+          </div>
+          <a class="text-link dark" href="index.html#berita">Lihat semua berita <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="news-grid" id="related-news"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <div>
+        <a class="brand footer-brand" href="index.html#home">
+          <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
+          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</small></span>
+        </a>
+        <p>Ruang informasi untuk warga, dari desa untuk bersama.</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <span>Navigasi</span>
+          <a href="index.html#home">Home</a>
+          <a href="index.html#berita">Berita</a>
+          <a href="index.html#galeri">Galeri</a>
+          <a href="index.html#info">Info</a>
+          <a href="index.html#anggaran">Anggaran</a>
+        </div>
+        <div>
+          <span>Kontak</span>
+          <a href="index.html#info-kontak">Lokasi kantor</a>
+          <a href="index.html#info-layanan">Pelayanan</a>
+          <a href="https://www.instagram.com/desakalekomara_/">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="current-year"></span> Pemerintah Desa Kale Ko'mara.</p>
+      <p>Program KKN Universitas Handayani Makassar</p>
+    </div>
+  </footer>
+</body>
+</html>
