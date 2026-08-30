@@ -94,6 +94,31 @@
      });
    }
    
+   /* ---------------------------------------------------------
+      INDIKATOR UPLOAD KHUSUS BLOK GAMBAR BERITA
+      Beda dari setUploadState: TIDAK mencari ".admin-field"
+      terdekat (yang di editor blok berarti wrapper besar seluruh
+      "Isi lengkap", bukan blok itu sendiri) — cukup toggle class
+      langsung di elemen blok yang sedang diunggah. Ini yang bikin
+      dulu semua file-input di semua blok ikut ke-disable dan bisa
+      nyangkut permanen kalau blok itu keburu di-render ulang.
+      --------------------------------------------------------- */
+   function setBlockUploadState(host, busy, text = "Mengunggah...") {
+     if (!host) return;
+     host.classList.toggle("is-uploading", busy);
+     let node = host.querySelector(".admin-upload-indicator");
+     if (busy) {
+       if (!node) {
+         node = document.createElement("div");
+         node.className = "admin-upload-indicator";
+         host.prepend(node);
+       }
+       node.innerHTML = `<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> ${esc(text)}`;
+     } else if (node) {
+       node.remove();
+     }
+   }
+
    async function uploadToStorage(file, folder) {
      const ext = (file.name.split(".").pop() || "bin").toLowerCase();
      const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -213,7 +238,68 @@
    let beritaList = [];
    let beritaEditingId = null;
    let beritaSlugTouched = false;
-   
+   let beritaBlocks = []; // isi berita: { type: "paragraph", text } atau { type: "image", url, caption }
+
+   // Berita lama menyimpan "content" sebagai array string biasa (satu
+   // paragraf per elemen). Ubah ke bentuk blok supaya bisa diedit di
+   // editor blok yang baru tanpa kehilangan data lama.
+   function contentToBlocks(content) {
+     return (content || []).map((entry) => {
+       if (typeof entry === "string") return { type: "paragraph", text: entry };
+       if (entry && entry.type === "image") return { type: "image", url: entry.url || "", caption: entry.caption || "" };
+       return { type: "paragraph", text: (entry && entry.text) || "" };
+     });
+   }
+
+   // Ringkasan otomatis: gabungan semua teks paragraf, dipotong di batas
+   // kata terdekat supaya tidak memotong di tengah kata.
+   function autoExcerpt(blocks, maxLen = 160) {
+     const text = blocks
+       .filter((b) => b.type === "paragraph" && b.text)
+       .map((b) => b.text.trim())
+       .join(" ")
+       .replace(/\s+/g, " ")
+       .trim();
+     if (text.length <= maxLen) return text;
+     const cut = text.slice(0, maxLen);
+     const lastSpace = cut.lastIndexOf(" ");
+     return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trim() + "…";
+   }
+
+   function renderBeritaBlocks() {
+     const wrap = $("berita-blocks");
+     if (beritaBlocks.length === 0) {
+       wrap.innerHTML = `<p class="admin-blocks-empty">Belum ada isi — tambah paragraf atau gambar di bawah. Gambar bisa diletakkan di mana saja, tidak harus di awal.</p>`;
+       return;
+     }
+     wrap.innerHTML = beritaBlocks.map((block, index) => {
+       const controls = `
+         <div class="admin-block-controls">
+           <button type="button" class="admin-block-btn" data-move="up" data-index="${index}" ${index === 0 ? "disabled" : ""} title="Naikkan"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+           <button type="button" class="admin-block-btn" data-move="down" data-index="${index}" ${index === beritaBlocks.length - 1 ? "disabled" : ""} title="Turunkan"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
+           <button type="button" class="admin-block-btn admin-block-remove" data-remove="${index}" title="Hapus bagian ini"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+         </div>`;
+       if (block.type === "image") {
+         return `
+           <div class="admin-block admin-block-image" data-index="${index}">
+             <div class="admin-block-head"><span class="admin-block-label"><i class="fa-solid fa-image" aria-hidden="true"></i> Gambar</span>${controls}</div>
+             <div class="admin-block-image-body">
+               ${block.url ? `<img src="${esc(block.url)}" alt="">` : `<div class="admin-block-image-placeholder"><i class="fa-solid fa-image" aria-hidden="true"></i> Belum ada foto</div>`}
+               <div class="admin-block-image-fields">
+                 <input type="file" accept="image/*" data-image-input="${index}">
+                 <input type="text" placeholder="Keterangan foto (opsional)" data-caption-input="${index}" value="${esc(block.caption || "")}">
+               </div>
+             </div>
+           </div>`;
+       }
+       return `
+         <div class="admin-block admin-block-paragraph" data-index="${index}">
+           <div class="admin-block-head"><span class="admin-block-label"><i class="fa-solid fa-paragraph" aria-hidden="true"></i> Paragraf</span>${controls}</div>
+           <textarea rows="3" data-text-input="${index}" placeholder="Tulis paragraf...">${esc(block.text || "")}</textarea>
+         </div>`;
+     }).join("");
+   }
+
    async function loadBerita() {
      const { data, error } = await supabaseClient.from("news").select("*").order("date", { ascending: false });
      if (error) { console.error(error); return; }
@@ -238,9 +324,11 @@
    function resetBeritaForm() {
      beritaEditingId = null;
      beritaSlugTouched = false;
+     beritaBlocks = [];
      $("berita-form").reset();
      $("berita-image-url").value = "";
      $("berita-image-preview").innerHTML = "";
+     renderBeritaBlocks();
      $("berita-form-title").textContent = "Berita baru";
      $("berita-delete-btn").hidden = true;
      renderBeritaList();
@@ -258,13 +346,15 @@
      $("berita-image-url").value = item.image_url || "";
      $("berita-image-preview").innerHTML = item.image_url ? `<img src="${esc(item.image_url)}" alt="">` : "";
      $("berita-excerpt").value = item.excerpt || "";
-     $("berita-content").value = (item.content || []).join("\n");
+     beritaBlocks = contentToBlocks(item.content);
+     renderBeritaBlocks();
      $("berita-form-title").textContent = "Ubah berita";
      $("berita-delete-btn").hidden = false;
      renderBeritaList();
    }
    
    function wireBeritaForm() {
+     renderBeritaBlocks();
      $("berita-new-btn").addEventListener("click", resetBeritaForm);
      $("berita-cancel-btn").addEventListener("click", resetBeritaForm);
    
@@ -292,19 +382,89 @@
        }
      });
    
+     // ---------- Editor blok isi berita (paragraf + gambar sisipan) ----------
+     const blocksWrap = $("berita-blocks");
+   
+     $("berita-add-paragraph").addEventListener("click", () => {
+       beritaBlocks.push({ type: "paragraph", text: "" });
+       renderBeritaBlocks();
+       const areas = blocksWrap.querySelectorAll("textarea[data-text-input]");
+       areas[areas.length - 1]?.focus();
+     });
+   
+     $("berita-add-image").addEventListener("click", () => {
+       beritaBlocks.push({ type: "image", url: "", caption: "" });
+       renderBeritaBlocks();
+     });
+   
+     // Ketikan di paragraf/keterangan hanya memperbarui data, tidak me-render
+     // ulang seluruh blok — supaya kursor & fokus tidak lompat saat mengetik.
+     blocksWrap.addEventListener("input", (event) => {
+       const textIndex = event.target.dataset.textInput;
+       if (textIndex !== undefined) { beritaBlocks[Number(textIndex)].text = event.target.value; return; }
+       const capIndex = event.target.dataset.captionInput;
+       if (capIndex !== undefined) beritaBlocks[Number(capIndex)].caption = event.target.value;
+     });
+   
+     blocksWrap.addEventListener("change", async (event) => {
+       const imgIndex = event.target.dataset.imageInput;
+       if (imgIndex === undefined) return;
+       const file = event.target.files[0];
+       if (!file) return;
+       const index = Number(imgIndex);
+       const blockEl = event.target.closest(".admin-block-image");
+       setBlockUploadState(blockEl, true, "Mengunggah foto...");
+       try {
+         const url = await uploadToStorage(file, "news");
+         beritaBlocks[index].url = url;
+       } catch (err) {
+         setStatus($("berita-status"), "Gagal unggah foto: " + err.message, true);
+       } finally {
+         setBlockUploadState(blockEl, false);
+         renderBeritaBlocks();
+       }
+     });
+   
+     blocksWrap.addEventListener("click", (event) => {
+       const moveBtn = event.target.closest("[data-move]");
+       if (moveBtn) {
+         const index = Number(moveBtn.dataset.index);
+         const target = index + (moveBtn.dataset.move === "up" ? -1 : 1);
+         if (target < 0 || target >= beritaBlocks.length) return;
+         [beritaBlocks[index], beritaBlocks[target]] = [beritaBlocks[target], beritaBlocks[index]];
+         renderBeritaBlocks();
+         return;
+       }
+       const removeBtn = event.target.closest("[data-remove]");
+       if (removeBtn) {
+         beritaBlocks.splice(Number(removeBtn.dataset.remove), 1);
+         renderBeritaBlocks();
+       }
+     });
+   
      $("berita-form").addEventListener("submit", async (event) => {
        event.preventDefault();
+   
+       const cleanBlocks = beritaBlocks
+         .map((b) => b.type === "image"
+           ? { type: "image", url: b.url || "", caption: (b.caption || "").trim() }
+           : { type: "paragraph", text: (b.text || "").trim() })
+         .filter((b) => (b.type === "paragraph" && b.text) || (b.type === "image" && b.url));
+   
+       if (cleanBlocks.length === 0) { setStatus($("berita-status"), "Tambahkan minimal satu paragraf atau gambar.", true); return; }
+   
        const submitBtn = event.currentTarget.querySelector('button[type="submit"]');
        setBusy(submitBtn, true, "Menyimpan berita...");
        try {
+         const manualExcerpt = $("berita-excerpt").value.trim();
          const payload = {
            title: $("berita-title").value.trim(),
            slug: slugify($("berita-slug").value),
            category: $("berita-category").value,
            date: $("berita-date").value,
            image_url: $("berita-image-url").value || null,
-           excerpt: $("berita-excerpt").value.trim(),
-           content: $("berita-content").value.split("\n").map((p) => p.trim()).filter(Boolean)
+           excerpt: manualExcerpt || autoExcerpt(cleanBlocks),
+           content: cleanBlocks
          };
    
          const query = beritaEditingId

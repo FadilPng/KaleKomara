@@ -122,8 +122,15 @@
                 <input type="hidden" id="berita-image-url">
               </label>
               <div class="admin-image-preview" id="berita-image-preview"></div>
-              <label class="admin-field"><span>Ringkasan singkat</span><textarea id="berita-excerpt" rows="2" required></textarea></label>
-              <label class="admin-field"><span>Isi lengkap — satu paragraf per baris</span><textarea id="berita-content" rows="7" required></textarea></label>
+              <label class="admin-field"><span>Ringkasan singkat (opsional)</span><textarea id="berita-excerpt" rows="2" placeholder="Kosongkan untuk dibuat otomatis dari isi berita"></textarea></label>
+              <div class="admin-field">
+                <span>Isi lengkap</span>
+                <div class="admin-blocks" id="berita-blocks"></div>
+                <div class="admin-blocks-actions">
+                  <button class="button" type="button" id="berita-add-paragraph"><i class="fa-solid fa-paragraph" aria-hidden="true"></i> Tambah paragraf</button>
+                  <button class="button" type="button" id="berita-add-image"><i class="fa-solid fa-image" aria-hidden="true"></i> Tambah gambar</button>
+                </div>
+              </div>
               <div class="admin-form-actions">
                 <button class="button button-primary" type="submit">Simpan berita</button>
                 <button class="button" type="button" id="berita-cancel-btn">Batal</button>

@@ -28,6 +28,34 @@
   
     const yearEl = document.getElementById("current-year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // ---------- Reveal saat discroll ----------
+    // Elemen dengan class "reveal" (judul "Berita lainnya" & tiap kartu berita)
+    // defaultnya opacity:0 di style.css sampai class "visible" ditambahkan lewat
+    // IntersectionObserver ini. Logic ini asalnya cuma ada di script.js, padahal
+    // halaman berita-detail.html tidak memuat script.js — jadi elemen "reveal"
+    // di halaman ini dulu tidak pernah muncul (transparan selamanya walau
+    // tetap makan tempat).
+    const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let revealObserver;
+    function observeReveals() {
+      if (prefersReducedMotion()) {
+        document.querySelectorAll(".reveal").forEach((item) => item.classList.add("visible"));
+        return;
+      }
+      if (!revealObserver) {
+        revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: "0px 0px -35px" });
+      }
+      document.querySelectorAll(".reveal:not(.visible)").forEach((item) => revealObserver.observe(item));
+    }
+    observeReveals();
   
     function showNotFound() {
       document.getElementById("article-title").textContent = "Berita tidak ditemukan";
@@ -54,6 +82,24 @@
           <h3><a href="${href}">${item.title}</a></h3>
           <p class="news-excerpt">${item.excerpt}</p>
         </article>`;
+    }
+
+    // ---------- Render isi berita: paragraf + gambar sisipan ----------
+    // "content" bisa berisi string lama (satu paragraf) ATAU objek blok baru
+    // { type: "paragraph", text } / { type: "image", url, caption }.
+    // Dua bentuk ini tetap didukung sekaligus supaya berita lama (sebelum
+    // fitur blok gambar ada) tetap tampil normal tanpa perlu diedit ulang.
+    function blockToHtml(block) {
+      if (typeof block === "string") {
+        return block.trim() ? `<p>${block}</p>` : "";
+      }
+      if (block && block.type === "image") {
+        if (!block.url) return "";
+        const caption = block.caption ? `<figcaption>${block.caption}</figcaption>` : "";
+        return `<figure class="article-figure"><img src="${block.url}" alt="${block.caption || ""}" loading="lazy">${caption}</figure>`;
+      }
+      const text = block && block.text ? block.text : "";
+      return text.trim() ? `<p>${text}</p>` : "";
     }
   
     // ---------- Ambil berita sesuai slug ----------
@@ -82,7 +128,7 @@
     imageEl.alt = `Foto untuk berita: ${article.title}`;
   
     const bodyEl = document.getElementById("article-body");
-    bodyEl.innerHTML = (article.content || []).map((paragraf) => `<p>${paragraf}</p>`).join("");
+    bodyEl.innerHTML = (article.content || []).map(blockToHtml).join("");
   
     // ---------- Berita lainnya (maksimum 3, selain berita yang sedang dibuka) ----------
     const { data: related, error: relatedError } = await supabaseClient
@@ -100,4 +146,5 @@
         relatedList.innerHTML = related.map(newsCardHtml).join("");
       }
     }
+    observeReveals();
   });

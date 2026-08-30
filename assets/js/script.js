@@ -630,12 +630,14 @@
   showPage(pageFromHash(window.location.hash), initialTarget, false);
   observeReveals();
 
-  async function initData() {
-    const loadingTargets = ["home-news-list", "news-list", "gallery-grid", "struktur-list"];
-    loadingTargets.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = `<p class="loading-text">Memuat data...</p>`;
-    });
+  async function refreshAllData({ showLoading = false } = {}) {
+    if (showLoading) {
+      const loadingTargets = ["home-news-list", "news-list", "gallery-grid", "struktur-list"];
+      loadingTargets.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<p class="loading-text">Memuat data...</p>`;
+      });
+    }
 
     try {
       [NEWS_DATA, GALLERY_DATA, STRUKTUR_DATA, STATISTIK_DATA, DUSUN_DATA, BUDGET_DATA] = await Promise.all([
@@ -648,9 +650,10 @@
       ]);
     } catch (error) {
       console.error("Gagal memuat data dari Supabase:", error);
+      return;
     }
 
-    activeBudgetYear = BUDGET_DATA[0]?.tahun;
+    activeBudgetYear = BUDGET_DATA.some((item) => item.tahun === activeBudgetYear) ? activeBudgetYear : BUDGET_DATA[0]?.tahun;
     STATISTIK_DATA.jumlahDusun = DUSUN_DATA.length;
 
     renderHomeNews();
@@ -663,4 +666,89 @@
     observeReveals();
   }
 
+  async function initData() {
+    await refreshAllData({ showLoading: true });
+  }
+
   initData();
+
+  // ---------- Live update dari Supabase (Realtime) ----------
+  // Begitu ada perubahan (tambah/ubah/hapus data) lewat admin panel,
+  // halaman ini otomatis ambil data terbaru & render ulang — tanpa
+  // pengunjung perlu refresh manual dan tanpa reload seluruh halaman
+  // (posisi scroll & menu yang sedang terbuka tidak ikut ter-reset).
+  //
+  // Tiap tabel cuma memicu refresh bagian yang relevan aja (mis. ubah
+  // berita tidak ikut memutar ulang animasi angka di halaman Anggaran).
+  //
+  // Syarat: Realtime harus diaktifkan untuk tabel-tabel ini di Supabase
+  // (Database → Replication di dashboard, atau lewat SQL):
+  //   alter publication supabase_realtime add table
+  //     news, gallery_items, gallery_images, struktur_desa,
+  //     statistik_desa, anggaran_tahun, anggaran_item;
+  // Kalau data dusun/penduduk ternyata disimpan di tabel tersendiri
+  // (di luar RPC get_statistik_dusun), tambahkan juga nama tabelnya ke
+  // TABLE_REFRESH di bawah supaya ikut ter-refresh otomatis.
+
+  async function refreshNews() {
+    NEWS_DATA = await fetchNewsData();
+    renderHomeNews();
+    renderNews();
+    observeReveals();
+  }
+
+  async function refreshGallery() {
+    GALLERY_DATA = await fetchGalleryData();
+    renderGallery();
+    observeReveals();
+  }
+
+  async function refreshStruktur() {
+    STRUKTUR_DATA = await fetchStrukturData();
+    renderStruktur();
+  }
+
+  async function refreshStatistik() {
+    [STATISTIK_DATA, DUSUN_DATA] = await Promise.all([fetchStatistikData(), fetchDusunData()]);
+    STATISTIK_DATA.jumlahDusun = DUSUN_DATA.length;
+    renderStatistik();
+  }
+
+  async function refreshAnggaran() {
+    BUDGET_DATA = await fetchBudgetData();
+    activeBudgetYear = BUDGET_DATA.some((item) => item.tahun === activeBudgetYear) ? activeBudgetYear : BUDGET_DATA[0]?.tahun;
+    renderBudgetFilters();
+    renderBudget();
+  }
+
+  const TABLE_REFRESH = {
+    news: refreshNews,
+    gallery_items: refreshGallery,
+    gallery_images: refreshGallery,
+    struktur_desa: refreshStruktur,
+    statistik_desa: refreshStatistik,
+    anggaran_tahun: refreshAnggaran,
+    anggaran_item: refreshAnggaran
+  };
+
+  // Beberapa perubahan sering datang beruntun (mis. simpan berita +
+  // beberapa gambar sekaligus) — debounce & kumpulkan dulu tabel mana
+  // saja yang berubah, supaya cuma satu kali refresh per bagian.
+  const pendingRefreshTables = new Set();
+  let realtimeRefreshTimer = null;
+  function scheduleRealtimeRefresh(table) {
+    pendingRefreshTables.add(table);
+    clearTimeout(realtimeRefreshTimer);
+    realtimeRefreshTimer = setTimeout(() => {
+      const tables = [...pendingRefreshTables];
+      pendingRefreshTables.clear();
+      const uniqueRefreshFns = new Set(tables.map((t) => TABLE_REFRESH[t]).filter(Boolean));
+      uniqueRefreshFns.forEach((fn) => fn());
+    }, 500);
+  }
+
+  const realtimeChannel = supabaseClient.channel("public-site-updates");
+  Object.keys(TABLE_REFRESH).forEach((table) => {
+    realtimeChannel.on("postgres_changes", { event: "*", schema: "public", table }, () => scheduleRealtimeRefresh(table));
+  });
+  realtimeChannel.subscribe();
