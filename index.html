@@ -25,7 +25,7 @@
         <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
         <span class="brand-copy">
           <strong>Desa Kale Ko'mara</strong>
-          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Utara</small>
+          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Timur</small>
         </span>
       </a>
 
@@ -62,7 +62,7 @@
 
         <div class="container hero-grid">
           <div class="hero-copy reveal">
-            <p class="eyebrow"><span></span> Kabupaten Takalar ·  Kecamatan Polongbangkeng Utara  ·  Sulawesi Selatan</p>
+            <p class="eyebrow"><span></span> Kabupaten Takalar ·  Kecamatan Polongbangkeng Timur  ·  Sulawesi Selatan</p>
             <h1 id="home-title">Ruang informasi<br>Desa <em>Kale Ko'mara</em></h1>
             <p class="hero-lead">Tempat warga menemukan kabar desa, informasi pelayanan, dan dokumentasi kegiatan dalam satu ruang yang sederhana.</p>
             <div class="hero-actions">
@@ -75,7 +75,7 @@
 
           <div class="hero-location reveal delay-1">
             <span class="caption-line"></span>
-            <p><small>Selamat datang di</small><strong>Desa Kale Ko'mara</strong><span>PolongBangkeng Utara, Takalar, Sulawesi Selatan</span></p>
+            <p><small>Selamat datang di</small><strong>Desa Kale Ko'mara</strong><span>PolongBangkeng Timur, Takalar, <br>Sulawesi Selatan</span></p>
           </div>
         </div>
       </div>
@@ -116,15 +116,25 @@
 
       <section class="welcome-section">
         <div class="container welcome-grid">
-          <div class="welcome-image reveal">
-            <img src="assets/bendung.jpeg" alt="Tempat untuk foto kegiatan warga Desa Kale Ko'mara" width="400" height="600">
-            <span class="image-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Bendungan Pamukkulu</span>
+          <div class="welcome-image reveal" id="spot-image-wrap">
+            <div class="spot-slide" id="spot-image-slide">
+              <img id="spot-image" src="assets/bendung.jpeg" alt="Bendungan Pamukkulu" width="400" height="600">
+              <span class="image-note" id="spot-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Bendungan Pamukkulu</span>
+            </div>
+      
+            <div class="spot-nav">
+              <button type="button" class="spot-nav-btn prev" id="spot-prev" aria-label="Spot sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+              <span class="spot-counter" id="spot-counter">1 / 3</span>
+              <button type="button" class="spot-nav-btn next" id="spot-next" aria-label="Spot berikutnya"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+            </div>
           </div>
+      
           <div class="welcome-copy reveal delay-1">
             <p class="section-kicker">Tentang desa</p>
-            <h2>Tumbuh bersama, dekat dengan warga.</h2>
-            <p>Website ini menjadi bagian dari upaya menghadirkan informasi desa yang lebih terbuka, mudah dijangkau, dan bermanfaat bagi seluruh warga Desa Kale Ko'mara.</p>
-            <p>Informasi resmi mengenai profil, program, dan layanan desa akan diperbarui secara berkala melalui halaman ini.</p>
+            <div class="spot-slide" id="spot-copy-slide">
+              <h2 id="spot-title">Bendungan Pamukkulu</h2>
+              <p id="spot-desc">Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan pemandangan yang tenang di sekitar Desa Kale Ko'mara.</p>
+            </div>
             <a class="text-link dark" href="#info" data-route="info">Mengenal desa lebih dekat <span aria-hidden="true">→</span></a>
           </div>
         </div>
@@ -238,7 +248,7 @@
               </div>
               <div class="fact-item">
                 <span>Kecamatan</span>
-                <strong>Polongbangkeng Utara</strong>
+                <strong>Polongbangkeng Timur</strong>
               </div>
               <div class="fact-item">
                 <span>Kode pos</span>
@@ -321,7 +331,7 @@
               <div class="contact-details">
                 <div class="contact-row">
                   <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                  <div><span>Alamat kantor desa</span><strong>Desa Kale Ko'mara, Kecamatan Polongbangkeng Utara, Kabupaten Takalar</strong><small>Alamat lengkap akan diperbarui</small></div>
+                  <div><span>Alamat kantor desa</span><strong>Desa Kale Ko'mara, Kecamatan Polongbangkeng Timur, Kabupaten Takalar</strong><small>Alamat lengkap akan diperbarui</small></div>
                 </div>
                 <div class="contact-row">
                   <i class="fa-solid fa-phone" aria-hidden="true"></i>
@@ -332,10 +342,16 @@
                   <div><span>Jam pelayanan</span><strong>Jadwal akan diperbarui</strong></div>
                 </div>
               </div>
-              <div class="map-placeholder" role="img" aria-label="Tempat untuk peta lokasi Kantor Desa Kale Ko'mara">
-                <div class="map-lines" aria-hidden="true"></div>
-                <span class="map-pin"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span>
-                <p>Kantor Desa<br><strong>Kale Ko'mara</strong></p>
+              <div class="map-container" style="width: 100%; min-height: 250px; border-radius: 12px; overflow: hidden;">
+                <iframe 
+                  src="https://maps.google.com/maps?q=-5.3972266587305375, 119.59939521254098&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                  width="100%" 
+                  height="100%" 
+                  style="border:0; min-height: 250px;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
               </div>
             </div>
           </article>
@@ -388,7 +404,7 @@
       <div>
         <a class="brand footer-brand" href="#home" data-route="home">
           <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
-          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</small></span>
+          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Timur, Kabupaten Takalar</small></span>
         </a>
         <p>Ruang informasi untuk warga, dari desa untuk bersama.</p>
       </div>
@@ -420,6 +436,7 @@
     <div class="lightbox-content">
       <div class="lightbox-stage" id="lightbox-stage">
         <img id="lightbox-image" src="" alt="">
+        <div class="lightbox-loading" id="lightbox-loading" hidden><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i></div>
         <button class="lightbox-nav prev" type="button" aria-label="Foto sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
         <button class="lightbox-nav next" type="button" aria-label="Foto berikutnya"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         <span class="lightbox-counter" id="lightbox-counter"></span>

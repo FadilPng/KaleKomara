@@ -32,7 +32,7 @@
         <div class="admin-login-visual-copy">
           <span class="admin-login-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
           <h2>Desa Kale Ko'mara</h2>
-          <p>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</p>
+          <p>Kecamatan Polongbangkeng Timur, Kabupaten Takalar</p>
         </div>
       </div>
 
@@ -374,7 +374,10 @@
   <template id="budget-row-template">
     <div class="admin-budget-row">
       <input type="text" class="budget-row-label" placeholder="Label, mis. Dana Desa" required>
-      <input type="number" class="budget-row-nilai" placeholder="Nilai (Rp)" min="0" required>
+      <div class="admin-budget-nilai-wrap">
+        <span class="admin-budget-nilai-prefix" aria-hidden="true">Rp</span>
+        <input type="text" inputmode="numeric" autocomplete="off" class="budget-row-nilai" placeholder="0" required>
+      </div>
       <button class="admin-row-remove" type="button" aria-label="Hapus baris">✕</button>
     </div>
   </template>
