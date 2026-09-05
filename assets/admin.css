@@ -421,6 +421,25 @@
     border-color: var(--green-2);
     box-shadow: 0 0 0 3px rgba(36,87,72,.14);
   }
+  /* Bungkus input nilai supaya bisa dikasih prefix "Rp" — admin sering
+     bingung menghitung nol saat isi nilai anggaran mentah, jadi angkanya
+     otomatis diformat pakai titik ribuan (mis. 150.000.000) sambil ketik. */
+  .admin-budget-nilai-wrap { position: relative; }
+  .admin-budget-nilai-wrap input.budget-row-nilai {
+    width: 100%;
+    padding-left: 32px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .admin-budget-nilai-prefix {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    font-size: 13px;
+    pointer-events: none;
+  }
   .admin-row-remove {
     width: 34px; height: 34px;
     display: grid; place-items: center;
@@ -1485,3 +1504,57 @@
        transform: none !important;
      }
    }
+/* =========================================================
+   DRAG & DROP — urutan item galeri & urutan foto galeri
+   Ditambahkan agar admin-row (daftar item galeri) dan
+   admin-image-chip (foto dalam satu item) bisa diseret untuk
+   mengubah urutan tampil di halaman publik.
+   ========================================================= */
+
+.admin-row { justify-content: flex-start; }
+.admin-row-actions { margin-left: auto; }
+
+.admin-row-draggable { cursor: grab; }
+.admin-row-draggable:active { cursor: grabbing; }
+
+.admin-drag-handle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--ink-soft);
+  cursor: grab;
+  font-size: 13px;
+}
+
+.admin-row-draggable.is-dragging { opacity: .45; }
+.admin-row-draggable.is-drag-over { box-shadow: 0 -2px 0 var(--orange); }
+
+.admin-image-chip { cursor: grab; }
+.admin-image-chip:active { cursor: grabbing; }
+
+.admin-chip-handle {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  color: var(--white);
+  background: rgba(23, 35, 31, .55);
+  border-radius: 50%;
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.admin-image-chip.is-dragging { opacity: .4; }
+.admin-image-chip.is-drag-over { box-shadow: 0 0 0 2px var(--orange); }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-row-draggable.is-dragging,
+  .admin-image-chip.is-dragging {
+    opacity: .7;
+  }
+}

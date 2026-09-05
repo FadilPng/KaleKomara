@@ -333,6 +333,7 @@
   const lightbox = document.getElementById("lightbox");
   const lightboxStage = document.getElementById("lightbox-stage");
   const lightboxImage = document.getElementById("lightbox-image");
+  const lightboxLoading = document.getElementById("lightbox-loading");
   const lightboxTitle = document.getElementById("lightbox-title");
   const lightboxCategory = document.getElementById("lightbox-category");
   const lightboxDescription = document.getElementById("lightbox-description");
@@ -343,31 +344,93 @@
   let currentGalleryItem = null;
   let currentImageIndex = 0;
   let lightboxAnimating = false;
+  // Token dinaikkan tiap kali mulai memuat foto baru — dipakai supaya
+  // event load/error dari foto LAMA (yang keburu diganti sebelum selesai
+  // dimuat, mis. user klik next-next dengan cepat) tidak ikut memicu
+  // status "siap" untuk foto yang sekarang sedang ditampilkan.
+  let lightboxLoadToken = 0;
+
+  function setLightboxLoading(isLoading) {
+    lightboxLoading.hidden = !isLoading;
+  }
+
+  // ---------- Tinggi kotak foto (.lightbox-stage) mengikuti rasio foto ----------
+  // Sebelumnya tinggi kotak ikut dipengaruhi rasio bawaan tiap foto secara
+  // "diam-diam" lewat CSS (height:100% pada img) — hasilnya foto tinggi
+  // kepotong (object-fit:cover), dan kalau batas tingginya dilepas malah
+  // modalnya kelebihan tinggi & discroll. Sekarang tinggi kotak dihitung
+  // manual di sini berdasarkan rasio foto YANG SEDANG TAMPIL, dibatasi
+  // supaya tidak pernah melebihi tinggi layar, lalu diset lewat
+  // style.height — perubahannya dianimasikan otomatis oleh CSS transition
+  // di .lightbox-stage, jadi pindah ke foto lain yang resolusinya beda
+  // kelihatan "membesar/mengecil" mulus, bukan lompat tiba-tiba.
+  function updateLightboxStageHeight() {
+    if (!lightboxImage.naturalWidth || !lightboxImage.naturalHeight) return;
+    const isMobile = window.innerWidth <= 720;
+    const stageWidth = lightboxStage.clientWidth || lightboxImage.naturalWidth;
+    const ratio = lightboxImage.naturalHeight / lightboxImage.naturalWidth;
+    const idealHeight = stageWidth * ratio;
+    const minHeight = isMobile ? 260 : 320;
+    const maxHeight = Math.min(window.innerHeight * (isMobile ? 0.56 : 0.76), isMobile ? 480 : 640);
+    const finalHeight = Math.min(Math.max(idealHeight, minHeight), maxHeight);
+    lightboxStage.style.height = `${Math.round(finalHeight)}px`;
+  }
+
+  window.addEventListener("resize", () => {
+    if (lightbox.open) updateLightboxStageHeight();
+  });
 
   function closeLightbox() {
     if (lightbox.open) lightbox.close();
     document.body.classList.remove("lightbox-open");
     currentGalleryItem = null;
     lightboxAnimating = false;
-    lightboxImage.classList.remove("lb-img-exit-left", "lb-img-exit-right", "lb-img-enter-right", "lb-img-enter-left");
+    lightboxLoadToken++;
+    lightboxImage.classList.remove("lb-img-exit-left", "lb-img-exit-right", "lb-img-enter-right", "lb-img-enter-left", "is-ready");
+    setLightboxLoading(false);
   }
 
-  // Mengganti src/alt/counter tanpa animasi (dipakai saat buka lightbox pertama kali).
-  function updateLightboxImageContent() {
-    if (!currentGalleryItem) return;
-    const images = currentGalleryItem.images;
-    lightboxImage.src = images[currentImageIndex];
-    lightboxImage.alt = `${currentGalleryItem.title} (${currentImageIndex + 1}/${images.length})`;
+  // Pasang src/alt baru pada elemen gambar dan tampilkan spinner sampai
+  // foto itu benar-benar termuat (bukan cuma sampai src diganti) —
+  // supaya foto lama tidak "nyangkut" tampil selagi foto baru diunduh.
+  // onReady dipanggil begitu foto siap ditampilkan (dipakai untuk memicu
+  // animasi masuk saat pindah foto).
+  function applyLightboxImage(src, alt, onReady) {
+    const token = ++lightboxLoadToken;
+    lightboxImage.classList.remove("is-ready");
+    setLightboxLoading(true);
+    const done = () => {
+      if (token !== lightboxLoadToken) return; // sudah pindah ke foto lain, abaikan
+      setLightboxLoading(false);
+      lightboxImage.classList.add("is-ready");
+      updateLightboxStageHeight();
+      if (onReady) onReady();
+    };
+    lightboxImage.addEventListener("load", done, { once: true });
+    lightboxImage.addEventListener("error", done, { once: true });
+    lightboxImage.src = src;
+    lightboxImage.alt = alt;
+    // Kalau foto sudah ada di cache browser, "load" bisa saja sudah lewat
+    // sebelum listener di atas terpasang — cek langsung supaya tidak
+    // nyangkut menampilkan spinner terus-menerus.
+    if (lightboxImage.complete && lightboxImage.naturalWidth > 0) done();
+  }
 
-    const multi = images.length > 1;
+  function updateLightboxCounter() {
+    if (!currentGalleryItem) return;
+    const total = currentGalleryItem.images.length;
+    const multi = total > 1;
     lightboxPrev.hidden = !multi;
     lightboxNext.hidden = !multi;
     lightboxCounter.hidden = !multi;
-    if (multi) lightboxCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+    if (multi) lightboxCounter.textContent = `${currentImageIndex + 1} / ${total}`;
   }
 
   function renderLightboxImage() {
-    updateLightboxImageContent();
+    if (!currentGalleryItem) return;
+    const images = currentGalleryItem.images;
+    applyLightboxImage(images[currentImageIndex], `${currentGalleryItem.title} (${currentImageIndex + 1}/${images.length})`);
+    updateLightboxCounter();
   }
 
   function openLightbox(item) {
@@ -376,13 +439,17 @@
     lightboxTitle.textContent = item.title;
     lightboxCategory.textContent = titleCase(item.category);
     lightboxDescription.textContent = item.description;
+    lightboxImage.classList.remove("lb-img-exit-left", "lb-img-exit-right", "lb-img-enter-right", "lb-img-enter-left");
     renderLightboxImage();
     document.body.classList.add("lightbox-open");
     lightbox.showModal();
   }
 
-  // Pindah ke foto berikutnya/sebelumnya dengan animasi geser + fade.
-  // direction: 1 = maju (geser dari kanan), -1 = mundur (geser dari kiri).
+  // Pindah ke foto berikutnya/sebelumnya dengan slide penuh yang smooth.
+  // direction: 1 = maju (geser ke kiri), -1 = mundur (geser ke kanan).
+  // Foto lama digeser keluar frame dulu; begitu selesai, foto baru mulai
+  // dimuat (spinner tampil kalau belum siap) baru kemudian digeser masuk
+  // ke tengah — jadi tidak pernah ada momen menampilkan foto yang salah.
   function stepLightbox(direction) {
     if (!currentGalleryItem || lightboxAnimating) return;
     const total = currentGalleryItem.images.length;
@@ -390,7 +457,7 @@
     currentImageIndex = (currentImageIndex + direction + total) % total;
 
     if (prefersReducedMotion()) {
-      updateLightboxImageContent();
+      renderLightboxImage();
       return;
     }
 
@@ -398,26 +465,35 @@
     const exitClass = direction > 0 ? "lb-img-exit-left" : "lb-img-exit-right";
     const enterClass = direction > 0 ? "lb-img-enter-right" : "lb-img-enter-left";
 
-    let finished = false;
-    const finishExit = () => {
-      if (finished) return;
-      finished = true;
-      lightboxImage.removeEventListener("transitionend", finishExit);
+    let exited = false;
+    const afterExit = () => {
+      if (exited) return;
+      exited = true;
+      lightboxImage.removeEventListener("transitionend", afterExit);
       lightboxImage.classList.remove(exitClass);
-      updateLightboxImageContent();
       lightboxImage.classList.add(enterClass);
-      // Paksa reflow supaya posisi awal (di luar frame) terdaftar dulu sebelum dianimasikan ke tengah.
-      void lightboxImage.offsetWidth;
-      requestAnimationFrame(() => {
-        lightboxImage.classList.remove(enterClass);
-        setTimeout(() => { lightboxAnimating = false; }, 340);
-      });
+
+      const images = currentGalleryItem.images;
+      applyLightboxImage(
+        images[currentImageIndex],
+        `${currentGalleryItem.title} (${currentImageIndex + 1}/${images.length})`,
+        () => {
+          // Paksa reflow supaya posisi awal (di luar frame) terdaftar
+          // dulu sebelum dianimasikan slide ke tengah.
+          void lightboxImage.offsetWidth;
+          requestAnimationFrame(() => {
+            lightboxImage.classList.remove(enterClass);
+            setTimeout(() => { lightboxAnimating = false; }, 420);
+          });
+        }
+      );
+      updateLightboxCounter();
     };
 
-    lightboxImage.addEventListener("transitionend", finishExit);
+    lightboxImage.addEventListener("transitionend", afterExit);
     lightboxImage.classList.add(exitClass);
-    // Jaring pengaman jika transitionend tidak terpicu (mis. gambar belum sempat termuat).
-    setTimeout(finishExit, 380);
+    // Jaring pengaman jika transitionend tidak terpicu.
+    setTimeout(afterExit, 460);
   }
 
   galleryGrid.addEventListener("click", (event) => {
@@ -752,3 +828,92 @@
     realtimeChannel.on("postgres_changes", { event: "*", schema: "public", table }, () => scheduleRealtimeRefresh(table));
   });
   realtimeChannel.subscribe();
+
+  // ---------- Spot foto (welcome section carousel) ----------
+const SPOT_DATA = [
+  {
+    image: "assets/bendung.jpeg",
+    title: "Bendungan Pamukkulu",
+    note: "Bendungan Pamukkulu",
+    desc: "Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan pemandangan yang tenang di sekitar Desa Kale Ko'mara."
+  },
+  {
+    image: "assets/timurung.jpeg",
+    title: "Air Terjun Timurung",
+    note: "Air Terjun Timurung",
+    desc: "Air terjun alami dengan suasana sejuk, cocok untuk yang ingin healing sejenak sambil menikmati alam sekitar desa."
+  },
+  {
+    image: "assets/atv.jpeg",
+    title: "Wisata ATV",
+    note: "Wisata ATV",
+    desc: "Wahana ATV yang bisa dicoba warga maupun pengunjung untuk menyusuri jalur di sekitar desa dengan cara yang lebih seru."
+  }
+];
+
+let spotIndex = 0;
+let spotAnimating = false;
+
+const spotImageSlide = document.getElementById("spot-image-slide");
+const spotCopySlide = document.getElementById("spot-copy-slide");
+const spotImage = document.getElementById("spot-image");
+const spotNote = document.getElementById("spot-note");
+const spotTitle = document.getElementById("spot-title");
+const spotDesc = document.getElementById("spot-desc");
+const spotCounter = document.getElementById("spot-counter");
+const spotPrev = document.getElementById("spot-prev");
+const spotNext = document.getElementById("spot-next");
+
+function applySpotContent() {
+  const item = SPOT_DATA[spotIndex];
+  spotImage.src = item.image;
+  spotImage.alt = item.title;
+  spotNote.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${item.note}`;
+  spotTitle.textContent = item.title;
+  spotDesc.textContent = item.desc;
+  spotCounter.textContent = `${spotIndex + 1} / ${SPOT_DATA.length}`;
+}
+
+// direction: 1 = maju (masuk dari kanan), -1 = mundur (masuk dari kiri)
+function stepSpot(direction) {
+  if (spotAnimating) return;
+  spotIndex = (spotIndex + direction + SPOT_DATA.length) % SPOT_DATA.length;
+
+  if (prefersReducedMotion()) {
+    applySpotContent();
+    return;
+  }
+
+  spotAnimating = true;
+  const exitClass = direction > 0 ? "spot-slide-exit-left" : "spot-slide-exit-right";
+  const enterClass = direction > 0 ? "spot-slide-enter-right" : "spot-slide-enter-left";
+  const elements = [spotImageSlide, spotCopySlide];
+
+  let finished = false;
+  const finishExit = () => {
+    if (finished) return;
+    finished = true;
+    spotImageSlide.removeEventListener("transitionend", finishExit);
+
+    elements.forEach((el) => el.classList.remove(exitClass));
+    applySpotContent();
+    elements.forEach((el) => el.classList.add(enterClass));
+
+    // Paksa reflow supaya posisi awal (di luar frame) terdaftar dulu sebelum dianimasikan ke tengah.
+    void spotImageSlide.offsetWidth;
+    requestAnimationFrame(() => {
+      elements.forEach((el) => el.classList.remove(enterClass));
+      setTimeout(() => { spotAnimating = false; }, 320);
+    });
+  };
+
+  spotImageSlide.addEventListener("transitionend", finishExit);
+  elements.forEach((el) => el.classList.add(exitClass));
+  // Jaring pengaman kalau transitionend tidak terpicu
+  setTimeout(finishExit, 360);
+}
+
+if (spotPrev && spotNext) {
+  spotPrev.addEventListener("click", () => stepSpot(-1));
+  spotNext.addEventListener("click", () => stepSpot(1));
+}

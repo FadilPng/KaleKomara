@@ -131,6 +131,85 @@
      return window.confirm(message);
    }
    
+   /* ---------------------------------------------------------
+      FORMAT RUPIAH — dipakai di form Anggaran supaya admin tidak
+      bingung menghitung nol saat mengisi nilai pendapatan/belanja.
+      Input diformat pakai titik ribuan (gaya Indonesia) sambil
+      diketik; angka aslinya (tanpa titik) yang disimpan ke Supabase.
+      --------------------------------------------------------- */
+   function formatRibuan(value) {
+     const digits = String(value).replace(/\D/g, "");
+     if (!digits) return "";
+     return Number(digits).toLocaleString("id-ID");
+   }
+   
+   function parseRibuan(value) {
+     const digits = String(value).replace(/\D/g, "");
+     return digits ? Number(digits) : 0;
+   }
+   
+   // Format ulang isi input tiap kali admin mengetik, sambil menjaga
+   // posisi kursor supaya tidak "loncat" ke akhir setiap kali titik
+   // ribuan berubah jumlahnya.
+   function wireRupiahInput(input) {
+     input.addEventListener("input", () => {
+       const digitsBeforeCursor = input.value.slice(0, input.selectionStart).replace(/\D/g, "").length;
+       input.value = formatRibuan(input.value);
+       let pos = 0, seen = 0;
+       while (pos < input.value.length && seen < digitsBeforeCursor) {
+         if (/\d/.test(input.value[pos])) seen++;
+         pos++;
+       }
+       input.setSelectionRange(pos, pos);
+     });
+   }
+   
+   /* ---------------------------------------------------------
+      UTIL DRAG & DROP — pindahkan satu elemen array dari
+      fromIndex ke toIndex, dipakai untuk urutan galeri & foto.
+      --------------------------------------------------------- */
+   function reorderArray(arr, fromIndex, toIndex) {
+     const copy = arr.slice();
+     const [moved] = copy.splice(fromIndex, 1);
+     copy.splice(toIndex, 0, moved);
+     return copy;
+   }
+   
+   /* ---------------------------------------------------------
+      Pasang drag & drop generik ke sekumpulan elemen di dalam
+      `wrap`. `selector` = elemen yang bisa diseret (draggable).
+      `onDrop(fromIndex, toIndex)` dipanggil begitu urutan baru
+      valid (diseret ke posisi yang berbeda).
+      --------------------------------------------------------- */
+   function wireDragReorder(wrap, selector, onDrop) {
+     if (!wrap) return;
+     let dragIndex = null;
+     const items = wrap.querySelectorAll(selector);
+     items.forEach((el) => {
+       el.addEventListener("dragstart", (e) => {
+         dragIndex = Number(el.dataset.index);
+         el.classList.add("is-dragging");
+         if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+       });
+       el.addEventListener("dragend", () => {
+         items.forEach((i) => i.classList.remove("is-dragging", "is-drag-over"));
+       });
+       el.addEventListener("dragover", (e) => {
+         e.preventDefault();
+         if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+         el.classList.add("is-drag-over");
+       });
+       el.addEventListener("dragleave", () => el.classList.remove("is-drag-over"));
+       el.addEventListener("drop", (e) => {
+         e.preventDefault();
+         el.classList.remove("is-drag-over");
+         const dropIndex = Number(el.dataset.index);
+         if (dragIndex === null || dragIndex === dropIndex) return;
+         onDrop(dragIndex, dropIndex);
+       });
+     });
+   }
+   
    /* =========================================================
       AUTH
       ========================================================= */
@@ -519,25 +598,57 @@
    function renderGaleriList() {
      const wrap = $("galeri-list");
      if (galeriList.length === 0) { wrap.innerHTML = `<p class="admin-empty"><i class="fa-solid fa-images" aria-hidden="true"></i>Belum ada item galeri — unggah foto pertama.</p>`; return; }
-     wrap.innerHTML = galeriList.map((item) => `
-       <div class="admin-row ${item.id === galeriEditingId ? "is-active" : ""}">
+     wrap.innerHTML = galeriList.map((item, index) => `
+       <div class="admin-row admin-row-draggable ${item.id === galeriEditingId ? "is-active" : ""}" draggable="true" data-index="${index}">
+         <span class="admin-drag-handle" title="Seret untuk ubah urutan" aria-hidden="true"><i class="fa-solid fa-grip-vertical"></i></span>
          <div class="admin-row-main"><strong>${esc(item.title)}</strong><span>${esc(item.category)} · ${item.images.length} foto</span></div>
          <div class="admin-row-actions">
            <button class="button" type="button" data-edit="${item.id}">Ubah</button>
          </div>
        </div>`).join("");
      wrap.querySelectorAll("[data-edit]").forEach((btn) => btn.addEventListener("click", () => editGaleri(btn.dataset.edit)));
+     wireDragReorder(wrap, ".admin-row-draggable", async (fromIndex, toIndex) => {
+       galeriList = reorderArray(galeriList, fromIndex, toIndex);
+       renderGaleriList();
+       await persistGaleriOrder();
+     });
      staggerRows(wrap);
+   }
+   
+   /* ---------------------------------------------------------
+      Simpan ulang sort_order semua item galeri ke Supabase
+      sesuai urutan terbaru di galeriList (dipanggil tiap kali
+      urutan diubah lewat drag & drop).
+      --------------------------------------------------------- */
+   async function persistGaleriOrder() {
+     const results = await Promise.all(
+       galeriList.map((item, i) => supabaseClient.from("gallery_items").update({ sort_order: i }).eq("id", item.id))
+     );
+     const failed = results.find((r) => r.error);
+     galeriList.forEach((item, i) => { item.sort_order = i; });
+     if (failed) {
+       setStatus($("galeri-status"), "Gagal menyimpan urutan: " + failed.error.message, true);
+     } else {
+       setStatus($("galeri-status"), "Urutan galeri diperbarui.");
+     }
    }
    
    function renderGaleriChips() {
      const wrap = $("galeri-image-chips");
      wrap.innerHTML = galeriImages.map((url, index) => `
-       <div class="admin-image-chip"><img src="${esc(url)}" alt=""><button type="button" data-remove="${index}">✕</button></div>`).join("");
+       <div class="admin-image-chip" draggable="true" data-index="${index}" title="Seret untuk ubah urutan">
+         <span class="admin-chip-handle" aria-hidden="true"><i class="fa-solid fa-grip-vertical"></i></span>
+         <img src="${esc(url)}" alt="">
+         <button type="button" data-remove="${index}">✕</button>
+       </div>`).join("");
      wrap.querySelectorAll("[data-remove]").forEach((btn) => btn.addEventListener("click", () => {
        galeriImages.splice(Number(btn.dataset.remove), 1);
        renderGaleriChips();
      }));
+     wireDragReorder(wrap, ".admin-image-chip", (fromIndex, toIndex) => {
+       galeriImages = reorderArray(galeriImages, fromIndex, toIndex);
+       renderGaleriChips();
+     });
    }
    
    function resetGaleriForm() {
@@ -1137,7 +1248,9 @@
      const template = $("budget-row-template");
      const clone = template.content.cloneNode(true);
      clone.querySelector(".budget-row-label").value = label;
-     clone.querySelector(".budget-row-nilai").value = nilai;
+     const nilaiInput = clone.querySelector(".budget-row-nilai");
+     nilaiInput.value = nilai ? formatRibuan(nilai) : "";
+     wireRupiahInput(nilaiInput);
      clone.querySelector(".admin-row-remove").addEventListener("click", (event) => {
        event.target.closest(".admin-budget-row").remove();
      });
@@ -1147,7 +1260,7 @@
    function readBudgetRows(containerId) {
      return [...$(containerId).querySelectorAll(".admin-budget-row")].map((row) => ({
        label: row.querySelector(".budget-row-label").value.trim(),
-       nilai: Number(row.querySelector(".budget-row-nilai").value) || 0
+       nilai: parseRibuan(row.querySelector(".budget-row-nilai").value)
      })).filter((row) => row.label);
    }
    
