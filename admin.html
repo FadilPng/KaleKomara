@@ -86,6 +86,7 @@
     <nav class="admin-tabs" id="admin-tabs">
       <button class="admin-tab active" type="button" data-tab="berita"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Berita</button>
       <button class="admin-tab" type="button" data-tab="galeri"><i class="fa-solid fa-images" aria-hidden="true"></i> Galeri</button>
+      <button class="admin-tab" type="button" data-tab="profil"><i class="fa-solid fa-address-card" aria-hidden="true"></i> Profil &amp; Kontak</button>
       <button class="admin-tab" type="button" data-tab="struktur"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> Struktur</button>
       <button class="admin-tab" type="button" data-tab="statistik"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Statistik &amp; Dusun</button>
       <button class="admin-tab" type="button" data-tab="penduduk"><i class="fa-solid fa-users" aria-hidden="true"></i> Data Penduduk</button>
@@ -181,6 +182,56 @@
                 <button class="button button-danger" type="button" id="galeri-delete-btn" hidden>Hapus</button>
               </div>
               <p class="admin-status" id="galeri-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROFIL & KONTAK ============ -->
+      <section class="admin-panel" data-panel="profil" hidden>
+        <div class="admin-layout">
+          <div class="admin-form-col">
+            <h2>Profil desa</h2>
+            <p class="admin-hint">Tampil di bagian Info → Profil desa di situs utama.</p>
+            <form id="profil-form">
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Wilayah</span><input type="text" id="profil-f-wilayah" placeholder="mis. Kabupaten Takalar"></label>
+                <label class="admin-field"><span>Provinsi</span><input type="text" id="profil-f-provinsi" placeholder="mis. Sulawesi Selatan"></label>
+              </div>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Kecamatan</span><input type="text" id="profil-f-kecamatan" placeholder="mis. Polongbangkeng Timur"></label>
+                <label class="admin-field"><span>Kode pos</span><input type="text" id="profil-f-kodepos" placeholder="mis. 92211"></label>
+              </div>
+              <label class="admin-field"><span>Deskripsi singkat</span><textarea id="profil-f-lead" rows="2" placeholder="Kalimat pembuka di bagian Profil desa"></textarea></label>
+              <label class="admin-field"><span>Sejarah singkat</span><textarea id="profil-f-sejarah" rows="4"></textarea></label>
+              <label class="admin-field"><span>Visi</span><textarea id="profil-f-visi" rows="2"></textarea></label>
+              <label class="admin-field"><span>Misi (satu poin per baris)</span><textarea id="profil-f-misi" rows="4" placeholder="Poin misi pertama&#10;Poin misi kedua&#10;Poin misi ketiga"></textarea></label>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan profil desa</button>
+              </div>
+              <p class="admin-status" id="profil-status" hidden></p>
+            </form>
+          </div>
+
+          <div class="admin-form-col">
+            <h2>Kontak &amp; lokasi</h2>
+            <p class="admin-hint">Tampil di bagian Info → Kontak &amp; lokasi di situs utama. Koordinat dipakai untuk peta.</p>
+            <form id="kontak-form">
+              <label class="admin-field"><span>Alamat kantor desa</span><input type="text" id="kontak-f-alamat" placeholder="mis. Desa Kale Ko'mara, Kecamatan Polongbangkeng Timur, Kabupaten Takalar"></label>
+              <label class="admin-field"><span>Keterangan alamat (opsional)</span><input type="text" id="kontak-f-alamat-detail" placeholder="mis. Jl. Poros Takalar No. 1"></label>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Telepon / WhatsApp</span><input type="text" id="kontak-f-telepon" placeholder="mis. 0812-3456-7890"></label>
+                <label class="admin-field"><span>Jam pelayanan</span><input type="text" id="kontak-f-jam" placeholder="mis. Senin–Jumat, 08.00–15.00"></label>
+              </div>
+              <div class="admin-field-row">
+                <label class="admin-field"><span>Latitude</span><input type="number" step="any" id="kontak-f-lat" placeholder="mis. -5.3972266"></label>
+                <label class="admin-field"><span>Longitude</span><input type="number" step="any" id="kontak-f-lng" placeholder="mis. 119.5993952"></label>
+              </div>
+              <label class="admin-field"><span>Zoom peta</span><input type="number" id="kontak-f-zoom" value="16" min="1" max="21"></label>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan kontak &amp; lokasi</button>
+              </div>
+              <p class="admin-status" id="kontak-status" hidden></p>
             </form>
           </div>
         </div>
