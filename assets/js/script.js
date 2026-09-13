@@ -14,6 +14,8 @@
   let STATISTIK_DATA = { totalPenduduk: 0, jumlahKK: 0, lakiLaki: 0, perempuan: 0, luasWilayah: 0, luasSatuan: "hektar", jumlahDusun: 0 };
   let DUSUN_DATA = [];
   let BUDGET_DATA = [];
+  let PROFIL_DATA = { wilayah: "", provinsi: "", kecamatan: "", kodePos: "", lead: "", sejarah: "", visi: "", misi: [] };
+  let KONTAK_DATA = { alamat: "", alamatDetail: "", telepon: "", jamPelayanan: "", lat: null, lng: null, zoom: 16 };
 
   // ---------- Ambil data dari Supabase ----------
   async function fetchNewsData() {
@@ -82,6 +84,35 @@
     const { data, error } = await supabaseClient.rpc("get_statistik_dusun");
     if (error) { console.error("Gagal memuat data dusun:", error.message); return []; }
     return data.map((row) => ({ nama: row.nama, jumlahPenduduk: Number(row.jumlah_penduduk) || 0 }));
+  }
+
+  async function fetchProfilData() {
+    const { data, error } = await supabaseClient.from("profil_desa").select("*").eq("id", 1).single();
+    if (error) { console.error("Gagal memuat profil desa:", error.message); return PROFIL_DATA; }
+    return {
+      wilayah: data.wilayah || "",
+      provinsi: data.provinsi || "",
+      kecamatan: data.kecamatan || "",
+      kodePos: data.kode_pos || "",
+      lead: data.lead_copy || "",
+      sejarah: data.sejarah || "",
+      visi: data.visi || "",
+      misi: (data.misi || "").split("\n").map((s) => s.trim()).filter(Boolean)
+    };
+  }
+
+  async function fetchKontakData() {
+    const { data, error } = await supabaseClient.from("kontak_desa").select("*").eq("id", 1).single();
+    if (error) { console.error("Gagal memuat kontak & lokasi:", error.message); return KONTAK_DATA; }
+    return {
+      alamat: data.alamat || "",
+      alamatDetail: data.alamat_detail || "",
+      telepon: data.telepon || "",
+      jamPelayanan: data.jam_pelayanan || "",
+      lat: data.maps_lat,
+      lng: data.maps_lng,
+      zoom: data.maps_zoom || 16
+    };
   }
 
   async function fetchBudgetData() {
@@ -639,6 +670,39 @@
       <div class="dusun-item"><strong>${item.nama}</strong><span>${item.jumlahPenduduk.toLocaleString("id-ID")} jiwa</span></div>`).join("");
   }
 
+  // ---------- Profil desa ----------
+  function renderProfil() {
+    const leadEl = document.getElementById("profil-lead");
+    if (!leadEl) return;
+
+    if (PROFIL_DATA.lead) leadEl.textContent = PROFIL_DATA.lead;
+    if (PROFIL_DATA.wilayah) document.getElementById("profil-wilayah").textContent = PROFIL_DATA.wilayah;
+    if (PROFIL_DATA.provinsi) document.getElementById("profil-provinsi").textContent = PROFIL_DATA.provinsi;
+    if (PROFIL_DATA.kecamatan) document.getElementById("profil-kecamatan").textContent = PROFIL_DATA.kecamatan;
+    if (PROFIL_DATA.kodePos) document.getElementById("profil-kodepos").textContent = PROFIL_DATA.kodePos;
+    if (PROFIL_DATA.sejarah) document.getElementById("profil-sejarah").textContent = PROFIL_DATA.sejarah;
+    if (PROFIL_DATA.visi) document.getElementById("profil-visi").textContent = PROFIL_DATA.visi;
+    if (PROFIL_DATA.misi.length > 0) {
+      document.getElementById("profil-misi").innerHTML = PROFIL_DATA.misi.map((poin) => `<li>${poin}</li>`).join("");
+    }
+  }
+
+  // ---------- Kontak & lokasi ----------
+  function renderKontak() {
+    const alamatEl = document.getElementById("kontak-alamat");
+    if (!alamatEl) return;
+
+    if (KONTAK_DATA.alamat) alamatEl.textContent = KONTAK_DATA.alamat;
+    if (KONTAK_DATA.alamatDetail) document.getElementById("kontak-alamat-detail").textContent = KONTAK_DATA.alamatDetail;
+    if (KONTAK_DATA.telepon) document.getElementById("kontak-telepon").textContent = KONTAK_DATA.telepon;
+    if (KONTAK_DATA.jamPelayanan) document.getElementById("kontak-jam").textContent = KONTAK_DATA.jamPelayanan;
+
+    if (KONTAK_DATA.lat != null && KONTAK_DATA.lng != null) {
+      const mapEl = document.getElementById("kontak-map");
+      if (mapEl) mapEl.src = `https://maps.google.com/maps?q=${KONTAK_DATA.lat},${KONTAK_DATA.lng}&t=&z=${KONTAK_DATA.zoom}&ie=UTF8&iwloc=&output=embed`;
+    }
+  }
+
   // ---------- Anggaran / transparansi ----------
   let activeBudgetYear = null;
 
@@ -716,13 +780,15 @@
     }
 
     try {
-      [NEWS_DATA, GALLERY_DATA, STRUKTUR_DATA, STATISTIK_DATA, DUSUN_DATA, BUDGET_DATA] = await Promise.all([
+      [NEWS_DATA, GALLERY_DATA, STRUKTUR_DATA, STATISTIK_DATA, DUSUN_DATA, BUDGET_DATA, PROFIL_DATA, KONTAK_DATA] = await Promise.all([
         fetchNewsData(),
         fetchGalleryData(),
         fetchStrukturData(),
         fetchStatistikData(),
         fetchDusunData(),
-        fetchBudgetData()
+        fetchBudgetData(),
+        fetchProfilData(),
+        fetchKontakData()
       ]);
     } catch (error) {
       console.error("Gagal memuat data dari Supabase:", error);
@@ -739,6 +805,8 @@
     renderStatistik();
     renderBudgetFilters();
     renderBudget();
+    renderProfil();
+    renderKontak();
     observeReveals();
   }
 
@@ -761,7 +829,8 @@
   // (Database → Replication di dashboard, atau lewat SQL):
   //   alter publication supabase_realtime add table
   //     news, gallery_items, gallery_images, struktur_desa,
-  //     statistik_desa, anggaran_tahun, anggaran_item;
+  //     statistik_desa, anggaran_tahun, anggaran_item,
+  //     profil_desa, kontak_desa;
   // Kalau data dusun/penduduk ternyata disimpan di tabel tersendiri
   // (di luar RPC get_statistik_dusun), tambahkan juga nama tabelnya ke
   // TABLE_REFRESH di bawah supaya ikut ter-refresh otomatis.
@@ -797,6 +866,16 @@
     renderBudget();
   }
 
+  async function refreshProfil() {
+    PROFIL_DATA = await fetchProfilData();
+    renderProfil();
+  }
+
+  async function refreshKontak() {
+    KONTAK_DATA = await fetchKontakData();
+    renderKontak();
+  }
+
   const TABLE_REFRESH = {
     news: refreshNews,
     gallery_items: refreshGallery,
@@ -804,7 +883,9 @@
     struktur_desa: refreshStruktur,
     statistik_desa: refreshStatistik,
     anggaran_tahun: refreshAnggaran,
-    anggaran_item: refreshAnggaran
+    anggaran_item: refreshAnggaran,
+    profil_desa: refreshProfil,
+    kontak_desa: refreshKontak
   };
 
   // Beberapa perubahan sering datang beruntun (mis. simpan berita +

@@ -266,6 +266,8 @@
        loadBerita();
        loadGaleri();
        loadStruktur();
+       loadProfil();
+       loadKontak();
        loadStatistik();
        loadDusun();
        loadKeluarga();
@@ -304,6 +306,8 @@
      wireBeritaForm();
      wireGaleriForm();
      wireStrukturForm();
+     wireProfilForm();
+     wireKontakForm();
      wireStatistikForm();
      wireDusunForm();
      wireKeluargaForm();
@@ -870,6 +874,92 @@
      });
    }
    
+   /* =========================================================
+      3b. PROFIL DESA (singleton, id = 1)
+      ========================================================= */
+   async function loadProfil() {
+     const { data, error } = await supabaseClient.from("profil_desa").select("*").eq("id", 1).single();
+     if (error) { console.error(error); return; }
+     if (!data) return;
+     $("profil-f-wilayah").value = data.wilayah || "";
+     $("profil-f-provinsi").value = data.provinsi || "";
+     $("profil-f-kecamatan").value = data.kecamatan || "";
+     $("profil-f-kodepos").value = data.kode_pos || "";
+     $("profil-f-lead").value = data.lead_copy || "";
+     $("profil-f-sejarah").value = data.sejarah || "";
+     $("profil-f-visi").value = data.visi || "";
+     $("profil-f-misi").value = data.misi || "";
+   }
+
+   function wireProfilForm() {
+     $("profil-form").addEventListener("submit", async (event) => {
+       event.preventDefault();
+       const submitBtn = event.currentTarget.querySelector('button[type="submit"]');
+       setBusy(submitBtn, true, "Menyimpan...");
+       try {
+         const payload = {
+           wilayah: $("profil-f-wilayah").value.trim(),
+           provinsi: $("profil-f-provinsi").value.trim(),
+           kecamatan: $("profil-f-kecamatan").value.trim(),
+           kode_pos: $("profil-f-kodepos").value.trim(),
+           lead_copy: $("profil-f-lead").value.trim(),
+           sejarah: $("profil-f-sejarah").value.trim(),
+           visi: $("profil-f-visi").value.trim(),
+           misi: $("profil-f-misi").value.trim(),
+           updated_at: new Date().toISOString()
+         };
+         const { error } = await supabaseClient.from("profil_desa").update(payload).eq("id", 1);
+         if (error) { setStatus($("profil-status"), "Gagal menyimpan: " + error.message, true); return; }
+         setStatus($("profil-status"), "Profil desa tersimpan.");
+       } finally {
+         setBusy(submitBtn, false);
+       }
+     });
+   }
+
+   /* =========================================================
+      3c. KONTAK & LOKASI (singleton, id = 1)
+      ========================================================= */
+   async function loadKontak() {
+     const { data, error } = await supabaseClient.from("kontak_desa").select("*").eq("id", 1).single();
+     if (error) { console.error(error); return; }
+     if (!data) return;
+     $("kontak-f-alamat").value = data.alamat || "";
+     $("kontak-f-alamat-detail").value = data.alamat_detail || "";
+     $("kontak-f-telepon").value = data.telepon || "";
+     $("kontak-f-jam").value = data.jam_pelayanan || "";
+     $("kontak-f-lat").value = data.maps_lat ?? "";
+     $("kontak-f-lng").value = data.maps_lng ?? "";
+     $("kontak-f-zoom").value = data.maps_zoom || 16;
+   }
+
+   function wireKontakForm() {
+     $("kontak-form").addEventListener("submit", async (event) => {
+       event.preventDefault();
+       const submitBtn = event.currentTarget.querySelector('button[type="submit"]');
+       setBusy(submitBtn, true, "Menyimpan...");
+       try {
+         const lat = $("kontak-f-lat").value.trim();
+         const lng = $("kontak-f-lng").value.trim();
+         const payload = {
+           alamat: $("kontak-f-alamat").value.trim(),
+           alamat_detail: $("kontak-f-alamat-detail").value.trim(),
+           telepon: $("kontak-f-telepon").value.trim(),
+           jam_pelayanan: $("kontak-f-jam").value.trim(),
+           maps_lat: lat === "" ? null : Number(lat),
+           maps_lng: lng === "" ? null : Number(lng),
+           maps_zoom: Number($("kontak-f-zoom").value) || 16,
+           updated_at: new Date().toISOString()
+         };
+         const { error } = await supabaseClient.from("kontak_desa").update(payload).eq("id", 1);
+         if (error) { setStatus($("kontak-status"), "Gagal menyimpan: " + error.message, true); return; }
+         setStatus($("kontak-status"), "Kontak & lokasi tersimpan.");
+       } finally {
+         setBusy(submitBtn, false);
+       }
+     });
+   }
+
    /* =========================================================
       4. STATISTIK & DUSUN
       ========================================================= */
