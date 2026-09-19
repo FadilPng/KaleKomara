@@ -11,6 +11,7 @@
   let NEWS_DATA = [];
   let GALLERY_DATA = [];
   let STRUKTUR_DATA = [];
+  let POTENSI_DATA = [];
   let STATISTIK_DATA = { totalPenduduk: 0, jumlahKK: 0, lakiLaki: 0, perempuan: 0, luasWilayah: 0, luasSatuan: "hektar", jumlahDusun: 0 };
   let DUSUN_DATA = [];
   let BUDGET_DATA = [];
@@ -52,6 +53,17 @@
     const { data, error } = await supabaseClient.from("struktur_desa").select("*").order("sort_order");
     if (error) { console.error("Gagal memuat struktur pemerintahan:", error.message); return []; }
     return data.map((row) => ({ nama: row.nama, jabatan: row.jabatan, foto: row.foto_url }));
+  }
+
+  async function fetchPotensiData() {
+    const { data, error } = await supabaseClient.from("potensi_desa").select("*").order("sort_order");
+    if (error) { console.error("Gagal memuat potensi desa:", error.message); return []; }
+    return data.map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description || "",
+      image: row.image_url || ""
+    }));
   }
 
   async function fetchStatistikData() {
@@ -644,6 +656,31 @@
       </div>`).join("");
   }
 
+  // ---------- Potensi desa (halaman Info) ----------
+  function potensiCardHtml(item) {
+    const imageBlock = item.image
+      ? `<span class="potensi-image"><img src="${item.image}" alt="${item.title}" loading="lazy"></span>`
+      : "";
+    return `
+      <div class="potensi-card">
+        ${imageBlock}
+        <h3>${item.title}</h3>
+        <p>${item.description}</p>
+      </div>`;
+  }
+
+  function renderPotensi() {
+    const wrap = document.getElementById("potensi-groups");
+    if (!wrap) return;
+
+    if (POTENSI_DATA.length === 0) {
+      wrap.innerHTML = `<p class="loading-text">Konten potensi desa akan segera dilengkapi.</p>`;
+      return;
+    }
+
+    wrap.innerHTML = `<div class="potensi-grid">${POTENSI_DATA.map(potensiCardHtml).join("")}</div>`;
+  }
+
   // ---------- Statistik desa ----------
   function renderStatistik() {
     const statGrid = document.getElementById("stat-grid");
@@ -780,7 +817,7 @@
     }
 
     try {
-      [NEWS_DATA, GALLERY_DATA, STRUKTUR_DATA, STATISTIK_DATA, DUSUN_DATA, BUDGET_DATA, PROFIL_DATA, KONTAK_DATA] = await Promise.all([
+      [NEWS_DATA, GALLERY_DATA, STRUKTUR_DATA, STATISTIK_DATA, DUSUN_DATA, BUDGET_DATA, PROFIL_DATA, KONTAK_DATA, POTENSI_DATA] = await Promise.all([
         fetchNewsData(),
         fetchGalleryData(),
         fetchStrukturData(),
@@ -788,7 +825,8 @@
         fetchDusunData(),
         fetchBudgetData(),
         fetchProfilData(),
-        fetchKontakData()
+        fetchKontakData(),
+        fetchPotensiData()
       ]);
     } catch (error) {
       console.error("Gagal memuat data dari Supabase:", error);
@@ -802,11 +840,13 @@
     renderNews();
     renderGallery();
     renderStruktur();
+    renderPotensi();
     renderStatistik();
     renderBudgetFilters();
     renderBudget();
     renderProfil();
     renderKontak();
+    renderSpotCarousel();
     observeReveals();
   }
 
@@ -829,7 +869,7 @@
   // (Database → Replication di dashboard, atau lewat SQL):
   //   alter publication supabase_realtime add table
   //     news, gallery_items, gallery_images, struktur_desa,
-  //     statistik_desa, anggaran_tahun, anggaran_item,
+  //     potensi_desa, statistik_desa, anggaran_tahun, anggaran_item,
   //     profil_desa, kontak_desa;
   // Kalau data dusun/penduduk ternyata disimpan di tabel tersendiri
   // (di luar RPC get_statistik_dusun), tambahkan juga nama tabelnya ke
@@ -851,6 +891,12 @@
   async function refreshStruktur() {
     STRUKTUR_DATA = await fetchStrukturData();
     renderStruktur();
+  }
+
+  async function refreshPotensi() {
+    POTENSI_DATA = await fetchPotensiData();
+    renderPotensi();
+    renderSpotCarousel();
   }
 
   async function refreshStatistik() {
@@ -881,6 +927,7 @@
     gallery_items: refreshGallery,
     gallery_images: refreshGallery,
     struktur_desa: refreshStruktur,
+    potensi_desa: refreshPotensi,
     statistik_desa: refreshStatistik,
     anggaran_tahun: refreshAnggaran,
     anggaran_item: refreshAnggaran,
@@ -910,91 +957,88 @@
   });
   realtimeChannel.subscribe();
 
-  // ---------- Spot foto (welcome section carousel) ----------
-const SPOT_DATA = [
-  {
-    image: "assets/bendung.jpeg",
-    title: "Bendungan Pamukkulu",
-    note: "Bendungan Pamukkulu",
-    desc: "Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan pemandangan yang tenang di sekitar Desa Kale Ko'mara."
-  },
-  {
-    image: "assets/timurung.jpeg",
-    title: "Air Terjun Timurung",
-    note: "Air Terjun Timurung",
-    desc: "Air terjun alami dengan suasana sejuk, cocok untuk yang ingin healing sejenak sambil menikmati alam sekitar desa."
-  },
-  {
-    image: "assets/atv.jpeg",
-    title: "Wisata ATV",
-    note: "Wisata ATV",
-    desc: "Wahana ATV yang bisa dicoba warga maupun pengunjung untuk menyusuri jalur di sekitar desa dengan cara yang lebih seru."
-  }
-];
+  // ---------- Potensi desa (welcome section carousel di beranda) ----------
+  // Kontennya sama dengan data "Potensi Desa" yang dikelola admin
+  // (POTENSI_DATA, lihat fetchPotensiData()) — bukan data terpisah lagi.
+  let spotIndex = 0;
+  let spotAnimating = false;
 
-let spotIndex = 0;
-let spotAnimating = false;
+  const welcomeSection = document.querySelector(".welcome-section");
+  const spotImageSlide = document.getElementById("spot-image-slide");
+  const spotCopySlide = document.getElementById("spot-copy-slide");
+  const spotImage = document.getElementById("spot-image");
+  const spotNote = document.getElementById("spot-note");
+  const spotTitle = document.getElementById("spot-title");
+  const spotDesc = document.getElementById("spot-desc");
+  const spotCounter = document.getElementById("spot-counter");
+  const spotPrev = document.getElementById("spot-prev");
+  const spotNext = document.getElementById("spot-next");
 
-const spotImageSlide = document.getElementById("spot-image-slide");
-const spotCopySlide = document.getElementById("spot-copy-slide");
-const spotImage = document.getElementById("spot-image");
-const spotNote = document.getElementById("spot-note");
-const spotTitle = document.getElementById("spot-title");
-const spotDesc = document.getElementById("spot-desc");
-const spotCounter = document.getElementById("spot-counter");
-const spotPrev = document.getElementById("spot-prev");
-const spotNext = document.getElementById("spot-next");
-
-function applySpotContent() {
-  const item = SPOT_DATA[spotIndex];
-  spotImage.src = item.image;
-  spotImage.alt = item.title;
-  spotNote.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${item.note}`;
-  spotTitle.textContent = item.title;
-  spotDesc.textContent = item.desc;
-  spotCounter.textContent = `${spotIndex + 1} / ${SPOT_DATA.length}`;
-}
-
-// direction: 1 = maju (masuk dari kanan), -1 = mundur (masuk dari kiri)
-function stepSpot(direction) {
-  if (spotAnimating) return;
-  spotIndex = (spotIndex + direction + SPOT_DATA.length) % SPOT_DATA.length;
-
-  if (prefersReducedMotion()) {
-    applySpotContent();
-    return;
+  function applySpotContent() {
+    const item = POTENSI_DATA[spotIndex];
+    if (!item) return;
+    spotImage.src = item.image || "assets/hero.png";
+    spotImage.alt = item.title;
+    spotNote.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${item.title}`;
+    spotTitle.textContent = item.title;
+    spotDesc.textContent = item.description;
+    spotCounter.textContent = `${spotIndex + 1} / ${POTENSI_DATA.length}`;
   }
 
-  spotAnimating = true;
-  const exitClass = direction > 0 ? "spot-slide-exit-left" : "spot-slide-exit-right";
-  const enterClass = direction > 0 ? "spot-slide-enter-right" : "spot-slide-enter-left";
-  const elements = [spotImageSlide, spotCopySlide];
-
-  let finished = false;
-  const finishExit = () => {
-    if (finished) return;
-    finished = true;
-    spotImageSlide.removeEventListener("transitionend", finishExit);
-
-    elements.forEach((el) => el.classList.remove(exitClass));
+  // Dipanggil tiap kali POTENSI_DATA berubah (muat awal atau lewat admin).
+  // Kalau belum ada data sama sekali, section ini disembunyikan dulu
+  // supaya tidak menampilkan carousel kosong.
+  function renderSpotCarousel() {
+    if (!welcomeSection) return;
+    if (POTENSI_DATA.length === 0) {
+      welcomeSection.hidden = true;
+      return;
+    }
+    welcomeSection.hidden = false;
+    spotIndex = Math.min(spotIndex, POTENSI_DATA.length - 1);
     applySpotContent();
-    elements.forEach((el) => el.classList.add(enterClass));
+  }
 
-    // Paksa reflow supaya posisi awal (di luar frame) terdaftar dulu sebelum dianimasikan ke tengah.
-    void spotImageSlide.offsetWidth;
-    requestAnimationFrame(() => {
-      elements.forEach((el) => el.classList.remove(enterClass));
-      setTimeout(() => { spotAnimating = false; }, 320);
-    });
-  };
+  // direction: 1 = maju (masuk dari kanan), -1 = mundur (masuk dari kiri)
+  function stepSpot(direction) {
+    if (spotAnimating || POTENSI_DATA.length === 0) return;
+    spotIndex = (spotIndex + direction + POTENSI_DATA.length) % POTENSI_DATA.length;
 
-  spotImageSlide.addEventListener("transitionend", finishExit);
-  elements.forEach((el) => el.classList.add(exitClass));
-  // Jaring pengaman kalau transitionend tidak terpicu
-  setTimeout(finishExit, 360);
-}
+    if (prefersReducedMotion()) {
+      applySpotContent();
+      return;
+    }
 
-if (spotPrev && spotNext) {
-  spotPrev.addEventListener("click", () => stepSpot(-1));
-  spotNext.addEventListener("click", () => stepSpot(1));
-}
+    spotAnimating = true;
+    const exitClass = direction > 0 ? "spot-slide-exit-left" : "spot-slide-exit-right";
+    const enterClass = direction > 0 ? "spot-slide-enter-right" : "spot-slide-enter-left";
+    const elements = [spotImageSlide, spotCopySlide];
+
+    let finished = false;
+    const finishExit = () => {
+      if (finished) return;
+      finished = true;
+      spotImageSlide.removeEventListener("transitionend", finishExit);
+
+      elements.forEach((el) => el.classList.remove(exitClass));
+      applySpotContent();
+      elements.forEach((el) => el.classList.add(enterClass));
+
+      // Paksa reflow supaya posisi awal (di luar frame) terdaftar dulu sebelum dianimasikan ke tengah.
+      void spotImageSlide.offsetWidth;
+      requestAnimationFrame(() => {
+        elements.forEach((el) => el.classList.remove(enterClass));
+        setTimeout(() => { spotAnimating = false; }, 320);
+      });
+    };
+
+    spotImageSlide.addEventListener("transitionend", finishExit);
+    elements.forEach((el) => el.classList.add(exitClass));
+    // Jaring pengaman kalau transitionend tidak terpicu
+    setTimeout(finishExit, 360);
+  }
+
+  if (spotPrev && spotNext) {
+    spotPrev.addEventListener("click", () => stepSpot(-1));
+    spotNext.addEventListener("click", () => stepSpot(1));
+  }

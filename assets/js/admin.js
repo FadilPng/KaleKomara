@@ -266,6 +266,7 @@
        loadBerita();
        loadGaleri();
        loadStruktur();
+       loadPotensi();
        loadProfil();
        loadKontak();
        loadStatistik();
@@ -306,6 +307,7 @@
      wireBeritaForm();
      wireGaleriForm();
      wireStrukturForm();
+     wirePotensiForm();
      wireProfilForm();
      wireKontakForm();
      wireStatistikForm();
@@ -874,6 +876,120 @@
      });
    }
    
+   /* =========================================================
+      3b. POTENSI DESA
+      ========================================================= */
+   let potensiList = [];
+   let potensiEditingId = null;
+
+   async function loadPotensi() {
+     const { data, error } = await supabaseClient.from("potensi_desa").select("*").order("sort_order");
+     if (error) { console.error(error); return; }
+     potensiList = data;
+     renderPotensiList();
+   }
+
+   function renderPotensiList() {
+     const wrap = $("potensi-list");
+     if (potensiList.length === 0) { wrap.innerHTML = `<p class="admin-empty"><i class="fa-solid fa-mountain-sun" aria-hidden="true"></i>Belum ada potensi desa yang ditambahkan.</p>`; return; }
+     wrap.innerHTML = potensiList.map((item) => `
+       <div class="admin-row ${item.id === potensiEditingId ? "is-active" : ""}">
+         <div class="admin-row-main"><strong>${esc(item.title)}</strong><span>${esc((item.description || "").slice(0, 60))}${(item.description || "").length > 60 ? "…" : ""}</span></div>
+         <div class="admin-row-actions">
+           <button class="button" type="button" data-edit="${item.id}">Ubah</button>
+         </div>
+       </div>`).join("");
+     wrap.querySelectorAll("[data-edit]").forEach((btn) => btn.addEventListener("click", () => editPotensi(btn.dataset.edit)));
+     staggerRows(wrap);
+   }
+
+   function resetPotensiForm() {
+     potensiEditingId = null;
+     $("potensi-form").reset();
+     $("potensi-sort").value = potensiList.length;
+     $("potensi-foto-url").value = "";
+     $("potensi-foto-preview").innerHTML = "";
+     $("potensi-form-title").textContent = "Potensi baru";
+     $("potensi-delete-btn").hidden = true;
+     renderPotensiList();
+   }
+
+   function editPotensi(id) {
+     const item = potensiList.find((p) => p.id === id);
+     if (!item) return;
+     potensiEditingId = id;
+     $("potensi-title").value = item.title;
+     $("potensi-sort").value = item.sort_order;
+     $("potensi-description").value = item.description || "";
+     $("potensi-foto-url").value = item.image_url || "";
+     $("potensi-foto-preview").innerHTML = item.image_url ? `<img src="${esc(item.image_url)}" alt="">` : "";
+     $("potensi-form-title").textContent = "Ubah potensi";
+     $("potensi-delete-btn").hidden = false;
+     renderPotensiList();
+   }
+
+   function wirePotensiForm() {
+     $("potensi-new-btn").addEventListener("click", resetPotensiForm);
+     $("potensi-cancel-btn").addEventListener("click", resetPotensiForm);
+
+     $("potensi-foto-file").addEventListener("change", async (event) => {
+       const file = event.target.files[0];
+       if (!file) return;
+       const preview = $("potensi-foto-preview");
+       preview.innerHTML = "";
+       setUploadState(preview, true, "Mengunggah foto...");
+       try {
+         const url = await uploadToStorage(file, "potensi");
+         $("potensi-foto-url").value = url;
+         preview.innerHTML = `<img src="${esc(url)}" alt="">`;
+       } catch (err) {
+         setStatus($("potensi-status"), "Gagal unggah foto: " + err.message, true);
+         preview.innerHTML = "";
+       } finally {
+         setUploadState(preview, false);
+         event.target.value = "";
+       }
+     });
+
+     $("potensi-form").addEventListener("submit", async (event) => {
+       event.preventDefault();
+       const submitBtn = event.currentTarget.querySelector('button[type="submit"]');
+       setBusy(submitBtn, true, "Menyimpan...");
+       try {
+         const payload = {
+           title: $("potensi-title").value.trim(),
+           description: $("potensi-description").value.trim(),
+           sort_order: Number($("potensi-sort").value) || 0,
+           image_url: $("potensi-foto-url").value || null
+         };
+         const query = potensiEditingId
+           ? supabaseClient.from("potensi_desa").update(payload).eq("id", potensiEditingId)
+           : supabaseClient.from("potensi_desa").insert(payload);
+         const { error } = await query;
+         if (error) { setStatus($("potensi-status"), "Gagal menyimpan: " + error.message, true); return; }
+         setStatus($("potensi-status"), "Potensi desa tersimpan.");
+         await loadPotensi();
+         resetPotensiForm();
+       } finally {
+         setBusy(submitBtn, false);
+       }
+     });
+
+     $("potensi-delete-btn").addEventListener("click", async () => {
+       if (!potensiEditingId || !confirmDelete("Hapus potensi desa ini?")) return;
+       const btn = $("potensi-delete-btn");
+       setBusy(btn, true, "Menghapus...");
+       try {
+         const { error } = await supabaseClient.from("potensi_desa").delete().eq("id", potensiEditingId);
+         if (error) { setStatus($("potensi-status"), "Gagal menghapus: " + error.message, true); return; }
+         await loadPotensi();
+         resetPotensiForm();
+       } finally {
+         setBusy(btn, false);
+       }
+     });
+   }
+
    /* =========================================================
       3b. PROFIL DESA (singleton, id = 1)
       ========================================================= */
