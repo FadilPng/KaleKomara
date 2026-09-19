@@ -87,6 +87,7 @@
       <button class="admin-tab active" type="button" data-tab="berita"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Berita</button>
       <button class="admin-tab" type="button" data-tab="galeri"><i class="fa-solid fa-images" aria-hidden="true"></i> Galeri</button>
       <button class="admin-tab" type="button" data-tab="profil"><i class="fa-solid fa-address-card" aria-hidden="true"></i> Profil &amp; Kontak</button>
+      <button class="admin-tab" type="button" data-tab="potensi"><i class="fa-solid fa-mountain-sun" aria-hidden="true"></i> Potensi Desa</button>
       <button class="admin-tab" type="button" data-tab="struktur"><i class="fa-solid fa-sitemap" aria-hidden="true"></i> Struktur</button>
       <button class="admin-tab" type="button" data-tab="statistik"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Statistik &amp; Dusun</button>
       <button class="admin-tab" type="button" data-tab="penduduk"><i class="fa-solid fa-users" aria-hidden="true"></i> Data Penduduk</button>
@@ -232,6 +233,37 @@
                 <button class="button button-primary" type="submit">Simpan kontak &amp; lokasi</button>
               </div>
               <p class="admin-status" id="kontak-status" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ POTENSI DESA ============ -->
+      <section class="admin-panel" data-panel="potensi" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Potensi desa</h2><button class="button button-primary" id="potensi-new-btn" type="button">+ Potensi baru</button></div>
+            <p class="admin-hint">Item di sini otomatis tampil di slide "Potensi desa" pada beranda dan di halaman Info Desa.</p>
+            <div id="potensi-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col">
+            <h2 id="potensi-form-title">Potensi baru</h2>
+            <form id="potensi-form">
+              <label class="admin-field"><span>Nama potensi</span><input type="text" id="potensi-title" required placeholder="mis. Bendungan Pamukkulu"></label>
+              <label class="admin-field"><span>Urutan tampil</span><input type="number" id="potensi-sort" value="0" min="0"></label>
+              <label class="admin-field"><span>Deskripsi</span><textarea id="potensi-description" rows="4" required placeholder="Jelaskan potensi ini secara singkat namun jelas."></textarea></label>
+              <label class="admin-field">
+                <span>Foto (opsional, tapi disarankan)</span>
+                <input type="file" id="potensi-foto-file" accept="image/*">
+                <input type="hidden" id="potensi-foto-url">
+              </label>
+              <div class="admin-image-preview" id="potensi-foto-preview"></div>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan</button>
+                <button class="button" type="button" id="potensi-cancel-btn">Batal</button>
+                <button class="button button-danger" type="button" id="potensi-delete-btn" hidden>Hapus</button>
+              </div>
+              <p class="admin-status" id="potensi-status" hidden></p>
             </form>
           </div>
         </div>

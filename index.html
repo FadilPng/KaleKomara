@@ -117,10 +117,12 @@
       <section class="welcome-section">
         <div class="container welcome-grid">
           <div class="welcome-image reveal" id="spot-image-wrap">
-            <div class="spot-slide" id="spot-image-slide">
-              <img id="spot-image" src="assets/bendung.jpeg" alt="Bendungan Pamukkulu" width="400" height="600">
-              <span class="image-note" id="spot-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Bendungan Pamukkulu</span>
-            </div>
+            <a class="spot-link" href="#info-potensi" data-route="info" aria-label="Lihat potensi desa selengkapnya di halaman Info Desa">
+              <div class="spot-slide" id="spot-image-slide">
+                <img id="spot-image" src="assets/bendung.jpeg" alt="Bendungan Pamukkulu" width="400" height="600">
+                <span class="image-note" id="spot-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Bendungan Pamukkulu</span>
+              </div>
+            </a>
       
             <div class="spot-nav">
               <button type="button" class="spot-nav-btn prev" id="spot-prev" aria-label="Spot sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
@@ -130,12 +132,12 @@
           </div>
       
           <div class="welcome-copy reveal delay-1">
-            <p class="section-kicker">Tentang desa</p>
+            <p class="section-kicker">Potensi desa</p>
             <div class="spot-slide" id="spot-copy-slide">
               <h2 id="spot-title">Bendungan Pamukkulu</h2>
               <p id="spot-desc">Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan pemandangan yang tenang di sekitar Desa Kale Ko'mara.</p>
             </div>
-            <a class="text-link dark" href="#info" data-route="info">Mengenal desa lebih dekat <span aria-hidden="true">→</span></a>
+            <a class="text-link dark" href="#info-potensi" data-route="info">Mengenal desa lebih dekat <span aria-hidden="true">→</span></a>
           </div>
         </div>
       </section>
@@ -226,10 +228,11 @@
         <aside class="info-nav reveal" aria-label="Navigasi informasi">
           <p>Daftar informasi</p>
           <a href="#info-profil" class="active">Profil desa <span>01</span></a>
-          <a href="#info-struktur">Struktur pemerintahan <span>02</span></a>
-          <a href="#info-statistik">Statistik desa <span>03</span></a>
-          <a href="#info-layanan">Pelayanan <span>04</span></a>
-          <a href="#info-kontak">Kontak & lokasi <span>05</span></a>
+          <a href="#info-potensi">Potensi desa <span>02</span></a>
+          <a href="#info-struktur">Struktur pemerintahan <span>03</span></a>
+          <a href="#info-statistik">Statistik desa <span>04</span></a>
+          <a href="#info-layanan">Pelayanan <span>05</span></a>
+          <a href="#info-kontak">Kontak & lokasi <span>06</span></a>
         </aside>
 
         <div class="info-content">
@@ -273,15 +276,25 @@
             </div>
           </article>
 
+          <article class="info-section reveal" id="info-potensi">
+            <p class="section-kicker">02 · Potensi desa</p>
+            <h2>Potensi Kale Ko'mara</h2>
+            <p class="lead-copy">Selain dikenal sebagai desa yang asri, Kale Ko'mara juga menyimpan potensi wisata alam, pertanian, dan usaha warga yang terus dikembangkan bersama untuk kesejahteraan masyarakat.</p>
+
+            <div id="potensi-groups">
+              <p class="loading-text">Memuat data...</p>
+            </div>
+          </article>
+
           <article class="info-section reveal" id="info-struktur">
-            <p class="section-kicker">02 · Struktur pemerintahan</p>
+            <p class="section-kicker">03 · Struktur pemerintahan</p>
             <h2>Perangkat desa</h2>
             <p class="lead-copy">Susunan organisasi Pemerintah Desa Kale Ko'mara yang menjalankan tugas pelayanan dan pembangunan bagi warga.</p>
             <div class="struktur-list" id="struktur-list"></div>
           </article>
 
           <article class="info-section reveal" id="info-statistik">
-            <p class="section-kicker">03 · Statistik desa</p>
+            <p class="section-kicker">04 · Statistik desa</p>
             <h2>Data kependudukan</h2>
             <p class="lead-copy">Gambaran umum jumlah dan sebaran penduduk Desa Kale Ko'mara. Data akan diperbarui secara berkala mengikuti pemutakhiran data desa.</p>
 
@@ -302,7 +315,7 @@
           </article>
 
           <article class="info-section reveal" id="info-layanan">
-            <p class="section-kicker">04 · Pelayanan</p>
+            <p class="section-kicker">05 · Pelayanan</p>
             <h2>Layanan administrasi</h2>
             <p>Silakan menghubungi atau datang ke kantor desa untuk memastikan persyaratan terbaru sebelum mengurus dokumen.</p>
             <div class="service-list">
@@ -325,7 +338,7 @@
           </article>
 
           <article class="info-section reveal" id="info-kontak">
-            <p class="section-kicker">05 · Kontak & lokasi</p>
+            <p class="section-kicker">06 · Kontak & lokasi</p>
             <h2>Temui kami</h2>
             <div class="contact-grid">
               <div class="contact-details">
