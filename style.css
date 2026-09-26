@@ -926,15 +926,6 @@ button {
   line-height: 1.65;
 }
 
-.news-sample {
-  display: inline-block;
-  margin-top: 13px;
-  color: #8a7565;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
 
 .loading-text {
   grid-column: 1 / -1;
@@ -2722,9 +2713,6 @@ button {
   }
 }
 
-.welcome-image {
-  position: relative;
-}
 
 .spot-slide {
   transition: transform .32s var(--ease), opacity .32s var(--ease);
