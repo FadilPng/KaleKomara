@@ -74,13 +74,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const href = `berita-detail.html?slug=${encodeURIComponent(item.slug)}`;
     return `
         <article class="news-card reveal ${index % 3 === 1 ? "delay-1" : index % 3 === 2 ? "delay-2" : ""}">
-          <a class="news-image" href="${href}" aria-label="Baca berita: ${item.title}">
-            <img src="${item.image_url}" alt="Tempat foto untuk berita: ${item.title}" loading="lazy" width="720" height="540">
-            <span class="news-category">${titleCase(item.category)}</span>
+          <a class="news-image" href="${href}" aria-label="Baca berita: ${esc(item.title)}">
+            <img src="${esc(safeUrl(item.image_url))}" alt="Tempat foto untuk berita: ${esc(item.title)}" loading="lazy" width="720" height="540">
+            <span class="news-category">${esc(titleCase(item.category))}</span>
           </a>
-          <div class="news-meta"><time>${formatTanggalIndo(item.date)}</time><span></span><span>Desa Kale Ko'mara</span></div>
-          <h3><a href="${href}">${item.title}</a></h3>
-          <p class="news-excerpt">${item.excerpt}</p>
+          <div class="news-meta"><time>${esc(formatTanggalIndo(item.date))}</time><span></span><span>Desa Kale Ko'mara</span></div>
+          <h3><a href="${href}">${esc(item.title)}</a></h3>
+          <p class="news-excerpt">${esc(item.excerpt)}</p>
         </article>`;
   }
 
@@ -91,15 +91,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   // fitur blok gambar ada) tetap tampil normal tanpa perlu diedit ulang.
   function blockToHtml(block) {
     if (typeof block === "string") {
-      return block.trim() ? `<p>${block}</p>` : "";
+      return block.trim() ? `<p>${esc(block)}</p>` : "";
     }
     if (block && block.type === "image") {
-      if (!block.url) return "";
-      const caption = block.caption ? `<figcaption>${block.caption}</figcaption>` : "";
-      return `<figure class="article-figure"><img src="${block.url}" alt="${block.caption || ""}" loading="lazy">${caption}</figure>`;
+      const url = safeUrl(block && block.url);
+      if (!url) return "";
+      const caption = block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : "";
+      return `<figure class="article-figure"><img src="${esc(url)}" alt="${esc(block.caption || "")}" loading="lazy">${caption}</figure>`;
     }
     const text = block && block.text ? block.text : "";
-    return text.trim() ? `<p>${text}</p>` : "";
+    return text.trim() ? `<p>${esc(text)}</p>` : "";
   }
 
   // ---------- Ambil berita sesuai slug ----------
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { data: article, error } = await supabaseClient.from("news").select("*").eq("slug", slug).single();
+  const { data: article, error } = await supabaseClient.from("news").select("*").eq("slug", slug).maybeSingle();
 
   if (error || !article) {
     showNotFound();

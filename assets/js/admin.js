@@ -5,7 +5,9 @@
    ========================================================= */
 
    const $ = (id) => document.getElementById(id);
-   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+   // esc() dan safeUrl() sekarang disediakan oleh supabase-client.js
+   // (dimuat sebelum file ini) supaya situs publik & admin memakai
+   // fungsi escaping yang sama.
    
    function slugify(text) {
      return text.toLowerCase().trim()
@@ -119,7 +121,25 @@
      }
    }
 
+   // Tipe & ukuran file yang diizinkan per folder. Ditolak SEBELUM
+   // upload supaya file berbahaya (SVG/HTML berisi skrip) atau file
+   // raksasa tidak masuk ke bucket publik.
+   const UPLOAD_RULES = {
+     news:     { types: ["image/jpeg", "image/png", "image/webp"], maxMB: 5,  label: "JPG/PNG/WebP" },
+     gallery:  { types: ["image/jpeg", "image/png", "image/webp"], maxMB: 5,  label: "JPG/PNG/WebP" },
+     struktur: { types: ["image/jpeg", "image/png", "image/webp"], maxMB: 5,  label: "JPG/PNG/WebP" },
+     potensi:  { types: ["image/jpeg", "image/png", "image/webp"], maxMB: 5,  label: "JPG/PNG/WebP" },
+     dokumen:  { types: ["application/pdf"],                       maxMB: 10, label: "PDF" }
+   };
+
    async function uploadToStorage(file, folder) {
+     const rule = UPLOAD_RULES[folder] || UPLOAD_RULES.news;
+     if (!rule.types.includes(file.type)) {
+       throw new Error(`Tipe file tidak diizinkan. Yang diterima: ${rule.label}.`);
+     }
+     if (file.size > rule.maxMB * 1024 * 1024) {
+       throw new Error(`Ukuran file maksimal ${rule.maxMB} MB.`);
+     }
      const ext = (file.name.split(".").pop() || "bin").toLowerCase();
      const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
      const { error } = await supabaseClient.storage.from("site-media").upload(path, file);
@@ -253,6 +273,13 @@
    function applySession(session) {
      $("login-screen").hidden = !!session;
      $("admin-app").hidden = !session;
+
+     if (!session) {
+       // Saat logout: reset flag supaya login berikutnya (atau ganti
+       // akun) memuat ulang data terbaru, bukan menampilkan data basi
+       // dari sesi sebelumnya.
+       dataLoaded = false;
+     }
    
      if (session) {
        // Trigger animasi masuk setiap kali sesi aktif ditampilkan
@@ -725,9 +752,16 @@
          };
    
          let itemId = galeriEditingId;
+         let oldImageRows = [];
          if (itemId) {
            const { error } = await supabaseClient.from("gallery_items").update(itemPayload).eq("id", itemId);
            if (error) { setStatus($("galeri-status"), "Gagal menyimpan: " + error.message, true); return; }
+           // Simpan daftar foto lama dulu sebagai jaring pengaman,
+           // baru hapus — kalau insert daftar baru gagal, foto lama
+           // dipulihkan sehingga item tidak kehilangan semua fotonya.
+           const { data: oldRows } = await supabaseClient
+             .from("gallery_images").select("*").eq("gallery_item_id", itemId).order("sort_order");
+           oldImageRows = oldRows || [];
            await supabaseClient.from("gallery_images").delete().eq("gallery_item_id", itemId);
          } else {
            const { data, error } = await supabaseClient.from("gallery_items").insert(itemPayload).select().single();
@@ -737,7 +771,11 @@
    
          const imageRows = galeriImages.map((url, index) => ({ gallery_item_id: itemId, image_url: url, sort_order: index }));
          const { error: imgError } = await supabaseClient.from("gallery_images").insert(imageRows);
-         if (imgError) { setStatus($("galeri-status"), "Item tersimpan, tapi foto gagal disimpan: " + imgError.message, true); return; }
+         if (imgError) {
+           if (oldImageRows.length) await supabaseClient.from("gallery_images").insert(oldImageRows);
+           setStatus($("galeri-status"), "Item tersimpan, tapi foto gagal disimpan — foto lama dipulihkan: " + imgError.message, true);
+           return;
+         }
    
          setStatus($("galeri-status"), "Item galeri tersimpan.");
          await loadGaleri();
@@ -1574,9 +1612,15 @@
          };
    
          let tahunId = anggaranEditingId;
+         let oldItemRows = [];
          if (tahunId) {
            const { error } = await supabaseClient.from("anggaran_tahun").update(tahunPayload).eq("id", tahunId);
            if (error) { setStatus($("anggaran-status"), "Gagal menyimpan: " + error.message, true); return; }
+           // Jaring pengaman: simpan rincian lama sebelum dihapus,
+           // supaya bisa dipulihkan kalau insert rincian baru gagal.
+           const { data: oldRows } = await supabaseClient
+             .from("anggaran_item").select("*").eq("anggaran_tahun_id", tahunId).order("sort_order");
+           oldItemRows = oldRows || [];
            await supabaseClient.from("anggaran_item").delete().eq("anggaran_tahun_id", tahunId);
          } else {
            const { data, error } = await supabaseClient.from("anggaran_tahun").insert(tahunPayload).select().single();
@@ -1590,7 +1634,11 @@
    
          if (allRows.length > 0) {
            const { error: itemError } = await supabaseClient.from("anggaran_item").insert(allRows);
-           if (itemError) { setStatus($("anggaran-status"), "Tahun tersimpan, tapi rincian gagal disimpan: " + itemError.message, true); return; }
+           if (itemError) {
+             if (oldItemRows.length) await supabaseClient.from("anggaran_item").insert(oldItemRows);
+             setStatus($("anggaran-status"), "Tahun tersimpan, tapi rincian gagal disimpan — rincian lama dipulihkan: " + itemError.message, true);
+             return;
+           }
          }
    
          setStatus($("anggaran-status"), "Anggaran tersimpan.");

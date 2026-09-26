@@ -311,14 +311,13 @@
     const href = `berita-detail.html?slug=${encodeURIComponent(item.slug)}`;
     return `
       <article class="news-card reveal ${index % 3 === 1 ? "delay-1" : index % 3 === 2 ? "delay-2" : ""}">
-        <a class="news-image" href="${href}" aria-label="Baca berita: ${item.title}">
-          <img src="${item.image}" alt="Tempat foto untuk berita: ${item.title}" loading="lazy" width="720" height="540">
-          <span class="news-category">${titleCase(item.category)}</span>
+        <a class="news-image" href="${href}" aria-label="Baca berita: ${esc(item.title)}">
+          <img src="${esc(safeUrl(item.image))}" alt="Tempat foto untuk berita: ${esc(item.title)}" loading="lazy" width="720" height="540">
+          <span class="news-category">${esc(titleCase(item.category))}</span>
         </a>
-        <div class="news-meta"><time>${item.date}</time><span></span><span>Desa Kale Ko'mara</span></div>
-        <h3><a href="${href}">${item.title}</a></h3>
-        <p class="news-excerpt">${item.excerpt}</p>
-        <small class="news-sample">Konten contoh · siap diganti</small>
+        <div class="news-meta"><time>${esc(item.date)}</time><span></span><span>Desa Kale Ko'mara</span></div>
+        <h3><a href="${href}">${esc(item.title)}</a></h3>
+        <p class="news-excerpt">${esc(item.excerpt)}</p>
       </article>`;
   }
   
@@ -355,11 +354,11 @@
   function renderGallery() {
     const filtered = GALLERY_DATA.filter((item) => activeGalleryFilter === "semua" || item.category === activeGalleryFilter);
     galleryGrid.innerHTML = filtered.map((item, index) => `
-      <button class="gallery-card ${item.size} reveal ${index % 3 === 1 ? "delay-1" : ""}" type="button" data-gallery-index="${GALLERY_DATA.indexOf(item)}" aria-label="Buka foto ${item.title}">
-        <img src="${item.images[0]}" alt="${item.title}" loading="lazy" width="900" height="700">
+      <button class="gallery-card ${esc(item.size)} reveal ${index % 3 === 1 ? "delay-1" : ""}" type="button" data-gallery-index="${GALLERY_DATA.indexOf(item)}" aria-label="Buka foto ${esc(item.title)}">
+        <img src="${esc(safeUrl(item.images[0]))}" alt="${esc(item.title)}" loading="lazy" width="900" height="700">
         ${item.images.length > 1 ? `<span class="gallery-photo-count"><i class="fa-regular fa-images" aria-hidden="true"></i> ${item.images.length}</span>` : ""}
         <span class="gallery-open"><i class="fa-solid fa-expand" aria-hidden="true"></i></span>
-        <span class="gallery-card-copy"><span>${titleCase(item.category)}</span><h3>${item.title}</h3></span>
+        <span class="gallery-card-copy"><span>${esc(titleCase(item.category))}</span><h3>${esc(item.title)}</h3></span>
       </button>`).join("");
     observeReveals();
   }
@@ -623,10 +622,10 @@
   function strukturItemCard(item, compact = false) {
     return `
       <div class="struktur-item ${compact ? "compact" : ""}">
-        <span class="struktur-avatar"><img src="${item.foto}" alt="Foto ${item.jabatan}" loading="lazy" width="120" height="120"></span>
+        <span class="struktur-avatar"><img src="${esc(safeUrl(item.foto))}" alt="Foto ${esc(item.jabatan)}" loading="lazy" width="120" height="120"></span>
         <div>
-          <h3>${item.nama}</h3>
-          <span>${item.jabatan}</span>
+          <h3>${esc(item.nama)}</h3>
+          <span>${esc(item.jabatan)}</span>
         </div>
       </div>`;
   }
@@ -659,13 +658,13 @@
   // ---------- Potensi desa (halaman Info) ----------
   function potensiCardHtml(item) {
     const imageBlock = item.image
-      ? `<span class="potensi-image"><img src="${item.image}" alt="${item.title}" loading="lazy"></span>`
+      ? `<span class="potensi-image"><img src="${esc(safeUrl(item.image))}" alt="${esc(item.title)}" loading="lazy"></span>`
       : "";
     return `
       <div class="potensi-card">
         ${imageBlock}
-        <h3>${item.title}</h3>
-        <p>${item.description}</p>
+        <h3>${esc(item.title)}</h3>
+        <p>${esc(item.description)}</p>
       </div>`;
   }
 
@@ -692,7 +691,7 @@
     statGrid.innerHTML = `
       <div class="fact-item"><span>Total penduduk</span><strong class="count-value" data-count-end="${STATISTIK_DATA.totalPenduduk}">0</strong></div>
       <div class="fact-item"><span>Jumlah kepala keluarga</span><strong class="count-value" data-count-end="${STATISTIK_DATA.jumlahKK}">0</strong></div>
-      <div class="fact-item"><span>Luas wilayah</span><strong class="count-value" data-count-end="${STATISTIK_DATA.luasWilayah}" data-count-decimals="2" data-count-suffix=" ${STATISTIK_DATA.luasSatuan}">0 ${STATISTIK_DATA.luasSatuan}</strong></div>
+      <div class="fact-item"><span>Luas wilayah</span><strong class="count-value" data-count-end="${STATISTIK_DATA.luasWilayah}" data-count-decimals="2" data-count-suffix=" ${esc(STATISTIK_DATA.luasSatuan)}">0 ${esc(STATISTIK_DATA.luasSatuan)}</strong></div>
       <div class="fact-item"><span>Jumlah dusun</span><strong class="count-value" data-count-end="${STATISTIK_DATA.jumlahDusun}">0</strong></div>`;
 
     genderBar.innerHTML = `
@@ -704,7 +703,7 @@
       <span><i class="dot-perempuan"></i> Perempuan</span>`;
 
     dusunList.innerHTML = DUSUN_DATA.map((item) => `
-      <div class="dusun-item"><strong>${item.nama}</strong><span>${item.jumlahPenduduk.toLocaleString("id-ID")} jiwa</span></div>`).join("");
+      <div class="dusun-item"><strong>${esc(item.nama)}</strong><span>${item.jumlahPenduduk.toLocaleString("id-ID")} jiwa</span></div>`).join("");
   }
 
   // ---------- Profil desa ----------
@@ -720,7 +719,7 @@
     if (PROFIL_DATA.sejarah) document.getElementById("profil-sejarah").textContent = PROFIL_DATA.sejarah;
     if (PROFIL_DATA.visi) document.getElementById("profil-visi").textContent = PROFIL_DATA.visi;
     if (PROFIL_DATA.misi.length > 0) {
-      document.getElementById("profil-misi").innerHTML = PROFIL_DATA.misi.map((poin) => `<li>${poin}</li>`).join("");
+      document.getElementById("profil-misi").innerHTML = PROFIL_DATA.misi.map((poin) => `<li>${esc(poin)}</li>`).join("");
     }
   }
 
@@ -735,8 +734,13 @@
     if (KONTAK_DATA.jamPelayanan) document.getElementById("kontak-jam").textContent = KONTAK_DATA.jamPelayanan;
 
     if (KONTAK_DATA.lat != null && KONTAK_DATA.lng != null) {
+      const lat = Number(KONTAK_DATA.lat);
+      const lng = Number(KONTAK_DATA.lng);
+      const zoom = Number(KONTAK_DATA.zoom);
       const mapEl = document.getElementById("kontak-map");
-      if (mapEl) mapEl.src = `https://maps.google.com/maps?q=${KONTAK_DATA.lat},${KONTAK_DATA.lng}&t=&z=${KONTAK_DATA.zoom}&ie=UTF8&iwloc=&output=embed`;
+      if (mapEl && Number.isFinite(lat) && Number.isFinite(lng)) {
+        mapEl.src = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=${Number.isFinite(zoom) ? zoom : 16}&ie=UTF8&iwloc=&output=embed`;
+      }
     }
   }
 
@@ -747,7 +751,7 @@
     const wrap = document.getElementById("anggaran-filters");
     if (!wrap) return;
     wrap.innerHTML = BUDGET_DATA.map((item) => `
-      <button class="filter-button ${item.tahun === activeBudgetYear ? "active" : ""}" type="button" data-year="${item.tahun}">${item.tahun}</button>`).join("");
+      <button class="filter-button ${item.tahun === activeBudgetYear ? "active" : ""}" type="button" data-year="${esc(item.tahun)}">${esc(item.tahun)}</button>`).join("");
   }
 
   function renderBudget() {
@@ -760,15 +764,15 @@
 
     const summary = document.getElementById("budget-summary");
     summary.innerHTML = `
-      <div class="budget-card"><span>Total pendapatan · ${data.tahun}</span><strong class="count-value" data-count-prefix="Rp " data-count-end="${totalPendapatan}">${formatRupiah(0)}</strong><small>Seluruh sumber pendapatan desa</small></div>
-      <div class="budget-card"><span>Total belanja · ${data.tahun}</span><strong class="count-value" data-count-prefix="Rp " data-count-end="${totalBelanja}">${formatRupiah(0)}</strong><small>Seluruh bidang belanja desa</small></div>
+      <div class="budget-card"><span>Total pendapatan · ${esc(data.tahun)}</span><strong class="count-value" data-count-prefix="Rp " data-count-end="${totalPendapatan}">${formatRupiah(0)}</strong><small>Seluruh sumber pendapatan desa</small></div>
+      <div class="budget-card"><span>Total belanja · ${esc(data.tahun)}</span><strong class="count-value" data-count-prefix="Rp " data-count-end="${totalBelanja}">${formatRupiah(0)}</strong><small>Seluruh bidang belanja desa</small></div>
       <div class="budget-card is-status ${selisih < 0 ? "deficit" : ""}"><span>${selisih < 0 ? "Defisit" : "Surplus"} anggaran</span><strong class="count-value" data-count-prefix="Rp " data-count-end="${Math.abs(selisih)}">${formatRupiah(0)}</strong><small>Selisih pendapatan dan belanja</small></div>`;
 
     const renderList = (items, total) => items.map((item) => {
       const percent = Math.round((item.nilai / total) * 100);
       return `
       <div class="budget-row">
-        <div class="budget-row-head"><span>${item.label}</span><span class="count-value" data-count-prefix="Rp " data-count-end="${item.nilai}">${formatRupiah(0)}</span></div>
+        <div class="budget-row-head"><span>${esc(item.label)}</span><span class="count-value" data-count-prefix="Rp " data-count-end="${item.nilai}">${formatRupiah(0)}</span></div>
         <div class="budget-bar"><div class="budget-bar-fill" data-width-end="${percent}" style="width:0%"></div></div>
       </div>`;
     }).join("");
@@ -781,8 +785,8 @@
     document.getElementById("doc-list").innerHTML = `
       <div class="doc-item">
         <span class="doc-icon"><i class="fa-regular fa-file-pdf" aria-hidden="true"></i></span>
-        <div class="doc-info"><strong>${data.dokumen.nama}</strong><span>${data.dokumen.ukuran}</span></div>
-        <a class="doc-download" href="${data.dokumen.href}"><i class="fa-solid fa-download" aria-hidden="true"></i> Unduh</a>
+        <div class="doc-info"><strong>${esc(data.dokumen.nama)}</strong><span>${esc(data.dokumen.ukuran)}</span></div>
+        <a class="doc-download" href="${safeUrl(data.dokumen.href) || "#"}"><i class="fa-solid fa-download" aria-hidden="true"></i> Unduh</a>
       </div>`;
 
     // Semua nilai rupiah & bar dianimasikan dari 0 setiap kali render (mis. saat ganti tahun).
@@ -977,9 +981,9 @@
   function applySpotContent() {
     const item = POTENSI_DATA[spotIndex];
     if (!item) return;
-    spotImage.src = item.image || "assets/hero.png";
+    spotImage.src = safeUrl(item.image) || "assets/hero.png";
     spotImage.alt = item.title;
-    spotNote.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${item.title}`;
+    spotNote.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${esc(item.title)}`;
     spotTitle.textContent = item.title;
     spotDesc.textContent = item.description;
     spotCounter.textContent = `${spotIndex + 1} / ${POTENSI_DATA.length}`;
