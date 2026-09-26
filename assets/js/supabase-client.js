@@ -59,12 +59,18 @@ function esc(value) {
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-// Hanya izinkan URL http/https — blokir javascript:, data:, dsb.
-// Dipakai untuk src/href yang nilainya berasal dari database.
-// Mengembalikan "" kalau URL tidak valid.
+// Hanya izinkan: URL absolut http(s) ATAU path relatif same-origin
+// (database menyimpan dua bentuk: "assets/bendung.jpeg" dan URL
+// storage yang diawali https://). Skema yang bisa mengeksekusi
+// kode (javascript:, data:, vbscript:) dan URL protocol-relative
+// ("//host/...") tetap diblokir. Mengembalikan "" kalau tidak valid.
 function safeUrl(url) {
   const value = String(url ?? "").trim();
-  return /^https?:\/\//i.test(value) ? value : "";
+  if (!value || /^(javascript|data|vbscript):/i.test(value) || value.startsWith("//")) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  // Path relatif: "assets/x.jpeg", "./x", "/x", "sub folder/nama file.jpg"
+  if (/^(\.\/|\.\.\/|\/)?[\w .-]+(\/[\w .-]+)*$/.test(value)) return value;
+  return "";
 }
 
 // Ubah tanggal ISO dari database ("2026-08-12") jadi format
