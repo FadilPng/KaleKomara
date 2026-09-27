@@ -2087,3 +2087,54 @@
     opacity: .7;
   }
 }
+
+/* ---------- Detail pengaduan ---------- */
+.pengaduan-detail {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.pengaduan-detail .pd-meta {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.pengaduan-detail .pd-isi {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+
+/* ---------- Badge pengaduan baru di tab ---------- */
+.admin-tab {
+  position: relative;
+}
+
+.admin-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-tab.is-ping {
+  animation: tab-ping 1.2s ease 2;
+}
+
+@keyframes tab-ping {
+  0% { background: rgba(212, 103, 54, .22); }
+  100% { background: transparent; }
+}
