@@ -209,7 +209,7 @@
   
   function pageFromHash(hash) {
     const clean = hash.replace("#", "") || "home";
-    if (["home", "berita", "galeri", "info", "anggaran"].includes(clean)) return clean;
+    if (["home", "berita", "galeri", "info", "anggaran", "aspirasi"].includes(clean)) return clean;
     if (clean.startsWith("info-")) return "info";
     return "home";
   }
@@ -1046,3 +1046,53 @@
     spotPrev.addEventListener("click", () => stepSpot(-1));
     spotNext.addEventListener("click", () => stepSpot(1));
   }
+
+  // ---------- Aspirasi warga (kritik / saran / pengaduan) ----------
+  // Validasi NIK terjadi DI DATABASE lewat RPC kirim_pengaduan()
+  // (SECURITY DEFINER) — tabel penduduk tetap tertutup untuk anon.
+  function wireAspirasiForm() {
+    const form = document.getElementById("aspirasi-form");
+    if (!form) return;
+    const statusEl = document.getElementById("aspirasi-status");
+    const nikInput = document.getElementById("aspirasi-nik");
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Hanya digit yang boleh masuk, maks 16.
+    nikInput.addEventListener("input", () => {
+      nikInput.value = nikInput.value.replace(/\D/g, "").slice(0, 16);
+    });
+
+    function setStatusPesan(text, isError) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("is-error", isError);
+      statusEl.hidden = false;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const nik = nikInput.value;
+      const kategori = document.getElementById("aspirasi-kategori").value;
+      const isi = (document.getElementById("aspirasi-isi").value || "").trim();
+      const kontak = (document.getElementById("aspirasi-kontak").value || "").trim();
+
+      if (nik.length !== 16) { setStatusPesan("NIK harus terdiri dari 16 digit angka.", true); return; }
+      if (isi.length < 10) { setStatusPesan("Isi pesan minimal 10 karakter.", true); return; }
+
+      submitBtn.disabled = true;
+      statusEl.hidden = true;
+      try {
+        const { error } = await supabaseClient.rpc("kirim_pengaduan", {
+          p_nik: nik,
+          p_kategori: kategori,
+          p_isi: isi,
+          p_kontak: kontak
+        });
+        if (error) { setStatusPesan(error.message, true); return; }
+        form.reset();
+        setStatusPesan("Terima kasih! Aspirasi Anda telah tercatat dan akan ditinjau oleh perangkat desa.", false);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+  wireAspirasiForm();

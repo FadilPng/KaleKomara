@@ -300,6 +300,7 @@
        loadDusun();
        loadKeluarga();
        loadAnggaran();
+       loadPengaduan();
      }
    }
    
@@ -342,6 +343,8 @@
      wireKeluargaForm();
      wireAnggotaForm();
      wireAnggaranForm();
+     wirePengaduan();
+     wirePengaduanRealtime();
    });
    
    /* =========================================================
@@ -1662,4 +1665,134 @@
          setBusy(btn, false);
        }
      });
+   }
+
+   /* =========================================================
+      7. PENGADUAN — kritik / saran / pengaduan warga
+      Masuk lewat RPC kirim_pengaduan() di situs publik;
+      hanya bisa dibaca & dikelola dari panel ini.
+      ========================================================= */
+   let pengaduanList = [];
+   let pengaduanFilter = "semua";
+   let pengaduanSelectedId = null;
+
+   async function loadPengaduan() {
+     const { data, error } = await supabaseClient
+       .from("pengaduan")
+       .select("*")
+       .order("created_at", { ascending: false });
+     if (error) { console.error(error); return; }
+     pengaduanList = data;
+     renderPengaduanList();
+   }
+
+   const PENGADUAN_LABEL = { kritik: "Kritik", saran: "Saran", pengaduan: "Pengaduan" };
+   const PENGADUAN_STATUS = { baru: "Baru", diproses: "Diproses", selesai: "Selesai" };
+
+   function renderPengaduanList() {
+     const wrap = $("pengaduan-list");
+     if (!wrap) return;
+     const filtered = pengaduanFilter === "semua"
+       ? pengaduanList
+       : pengaduanList.filter((p) => p.status === pengaduanFilter);
+     if (filtered.length === 0) {
+       wrap.innerHTML = `<p class="admin-empty"><i class="fa-solid fa-inbox" aria-hidden="true"></i>Tidak ada pesan pada filter ini.</p>`;
+       return;
+     }
+     wrap.innerHTML = filtered.map((item) => `
+       <div class="admin-row ${item.id === pengaduanSelectedId ? "is-active" : ""}">
+         <div class="admin-row-main">
+           <strong>${esc(item.nama)}</strong>
+           <span>${esc(PENGADUAN_LABEL[item.kategori] || item.kategori)} · ${esc(PENGADUAN_STATUS[item.status] || item.status)} · ${new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
+         </div>
+         <div class="admin-row-actions">
+           <button class="button" type="button" data-buka="${item.id}">Buka</button>
+         </div>
+       </div>`).join("");
+     wrap.querySelectorAll("[data-buka]").forEach((btn) =>
+       btn.addEventListener("click", () => bukaPengaduan(btn.dataset.buka)));
+     staggerRows(wrap);
+     updatePengaduanBadge();
+   }
+
+   function bukaPengaduan(id) {
+     const item = pengaduanList.find((p) => p.id === id);
+     if (!item) return;
+     pengaduanSelectedId = id;
+     $("pengaduan-detail-col").hidden = false;
+     $("pengaduan-detail").innerHTML = `
+       <p class="pd-meta"><strong>${esc(item.nama)}</strong> · ${esc(PENGADUAN_LABEL[item.kategori] || item.kategori)}</p>
+       <p class="pd-meta">Dikirim ${new Date(item.created_at).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" })}</p>
+       ${item.kontak ? `<p class="pd-meta">Kontak: ${esc(item.kontak)}</p>` : ""}
+       <p class="pd-isi">${esc(item.isi)}</p>`;
+     $("pengaduan-status").value = item.status;
+     $("pengaduan-tanggapan").value = item.tanggapan || "";
+     renderPengaduanList();
+   }
+
+   function wirePengaduan() {
+     $("pengaduan-filters").addEventListener("click", (event) => {
+       const button = event.target.closest("[data-status]");
+       if (!button) return;
+       pengaduanFilter = button.dataset.status;
+       document.querySelectorAll("#pengaduan-filters .filter-button").forEach((b) => b.classList.toggle("active", b === button));
+       renderPengaduanList();
+     });
+
+     $("pengaduan-form").addEventListener("submit", async (event) => {
+       event.preventDefault();
+       if (!pengaduanSelectedId) return;
+       const submitBtn = event.currentTarget.querySelector('button[type="submit"]');
+       setBusy(submitBtn, true, "Menyimpan...");
+       try {
+         const { error } = await supabaseClient
+           .from("pengaduan")
+           .update({
+             status: $("pengaduan-status").value,
+             tanggapan: $("pengaduan-tanggapan").value.trim(),
+             updated_at: new Date().toISOString()
+           })
+           .eq("id", pengaduanSelectedId);
+         if (error) { setStatus($("pengaduan-msg"), "Gagal menyimpan: " + error.message, true); return; }
+         setStatus($("pengaduan-msg"), "Penanganan tersimpan.");
+         await loadPengaduan();
+       } finally {
+         setBusy(submitBtn, false);
+       }
+     });
+   }
+
+   /* ---------------------------------------------------------
+      BADGE JUMLAH PENGADUAN BARU DI TAB
+      --------------------------------------------------------- */
+   function updatePengaduanBadge() {
+     const badge = $("pengaduan-badge");
+     if (!badge) return;
+     const baru = pengaduanList.filter((p) => p.status === "baru").length;
+     badge.textContent = baru;
+     badge.hidden = baru === 0;
+   }
+
+   /* ---------------------------------------------------------
+      REALTIME PENGADUAN — pesan baru masuk tanpa refresh.
+      Event INSERT/UPDATE dari tabel pengaduan memicu muat ulang
+      daftar. RLS realtime mengikuti role yang login, jadi hanya
+      admin (authenticated) yang menerima event ini.
+      --------------------------------------------------------- */
+   function wirePengaduanRealtime() {
+     supabaseClient
+       .channel("admin-pengaduan")
+       .on("postgres_changes", { event: "*", schema: "public", table: "pengaduan" }, (payload) => {
+         loadPengaduan();
+         if (payload.eventType === "INSERT") {
+           const tab = document.querySelector('[data-tab="pengaduan"]');
+           if (tab) {
+             tab.classList.remove("is-ping");
+             void tab.offsetWidth; // restart animasi
+             tab.classList.add("is-ping");
+             setTimeout(() => tab.classList.remove("is-ping"), 2600);
+           }
+         }
+       })
+       .subscribe();
    }

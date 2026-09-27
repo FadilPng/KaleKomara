@@ -8,6 +8,34 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const titleCase = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
+  // ---------- SEO: meta dinamis per artikel ----------
+  const SITE_URL = "https://kale-komara.vercel.app";
+
+  function setMetaTag(attr, name, content) {
+    let el = document.head.querySelector(`meta[${attr}="${name}"]`);
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute(attr, name);
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  function setCanonical(href) {
+    let el = document.querySelector('link[rel="canonical"]');
+    if (!el) {
+      el = document.createElement("link");
+      el.rel = "canonical";
+      document.head.appendChild(el);
+    }
+    el.href = href;
+  }
+
+  // Supaya halaman "berita tidak ditemukan" tidak ikut terindeks Google.
+  function setNoIndex() {
+    setMetaTag("name", "robots", "noindex");
+  }
+
   // ---------- Menu mobile ----------
   const menu = document.querySelector(".primary-nav");
   const menuToggle = document.querySelector(".menu-toggle");
@@ -68,6 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (notFound) notFound.hidden = false;
     const relatedSection = document.getElementById("related-section");
     if (relatedSection) relatedSection.hidden = true;
+    setNoIndex();
   }
 
   function newsCardHtml(item, index = 0) {
@@ -130,6 +159,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const bodyEl = document.getElementById("article-body");
   bodyEl.innerHTML = (article.content || []).map(blockToHtml).join("");
+
+  // ---------- SEO: isi meta + canonical + JSON-LD sesuai artikel ----------
+  const articleUrl = `${SITE_URL}/berita-detail.html?slug=${encodeURIComponent(article.slug)}`;
+  setCanonical(articleUrl);
+  setMetaTag("name", "description", article.excerpt || article.title);
+  setMetaTag("property", "og:title", article.title);
+  setMetaTag("property", "og:description", article.excerpt || article.title);
+  setMetaTag("property", "og:url", articleUrl);
+  if (article.image_url) {
+    setMetaTag("property", "og:image", new URL(article.image_url, SITE_URL).href);
+  }
+
+  const jsonLd = document.createElement("script");
+  jsonLd.type = "application/ld+json";
+  jsonLd.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": article.title,
+    "description": article.excerpt || "",
+    "image": article.image_url ? [new URL(article.image_url, SITE_URL).href] : [],
+    "datePublished": article.date,
+    "dateModified": article.updated_at || article.date,
+    "author": { "@type": "Organization", "name": "Pemerintah Desa Kale Ko'mara" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Pemerintah Desa Kale Ko'mara",
+      "logo": { "@type": "ImageObject", "url": `${SITE_URL}/assets/icon.png` }
+    },
+    "mainEntityOfPage": articleUrl
+  });
+  document.head.appendChild(jsonLd);
 
   // ---------- Berita lainnya (maksimum 3, selain berita yang sedang dibuka) ----------
   const { data: related, error: relatedError } = await supabaseClient
