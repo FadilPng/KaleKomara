@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/admin.css">
   <link rel="icon" type="image/x-icon" href="assets/icon.png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js" integrity="sha384-q36VSR1ktH2hgqgm+0LDeyqPW8CyZHSxfDSttSPm5ReOJzB+sYThmh7D4fE+jWTs" crossorigin="anonymous" defer></script>
   <script src="assets/js/supabase-client.js" defer></script>
   <script src="assets/js/admin.js" defer></script>
 </head>
@@ -92,6 +92,7 @@
       <button class="admin-tab" type="button" data-tab="statistik"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Statistik &amp; Dusun</button>
       <button class="admin-tab" type="button" data-tab="penduduk"><i class="fa-solid fa-users" aria-hidden="true"></i> Data Penduduk</button>
       <button class="admin-tab" type="button" data-tab="anggaran"><i class="fa-solid fa-coins" aria-hidden="true"></i> Anggaran</button>
+      <button class="admin-tab" type="button" data-tab="pengaduan"><i class="fa-solid fa-inbox" aria-hidden="true"></i> Pengaduan <span class="admin-tab-badge" id="pengaduan-badge" hidden></span></button>
     </nav>
 
     <main class="admin-main">
@@ -120,7 +121,7 @@
               </div>
               <label class="admin-field">
                 <span>Gambar sampul</span>
-                <input type="file" id="berita-image-file" accept="image/*">
+                <input type="file" id="berita-image-file" accept="image/jpeg,image/png,image/webp">
                 <input type="hidden" id="berita-image-url">
               </label>
               <div class="admin-image-preview" id="berita-image-preview"></div>
@@ -174,7 +175,7 @@
               <label class="admin-field"><span>Deskripsi (opsional)</span><textarea id="galeri-description" rows="2"></textarea></label>
               <label class="admin-field">
                 <span>Tambah foto (bisa pilih beberapa sekaligus)</span>
-                <input type="file" id="galeri-image-file" accept="image/*" multiple>
+                <input type="file" id="galeri-image-file" accept="image/jpeg,image/png,image/webp" multiple>
               </label>
               <div class="admin-image-chips" id="galeri-image-chips"></div>
               <div class="admin-form-actions">
@@ -254,7 +255,7 @@
               <label class="admin-field"><span>Deskripsi</span><textarea id="potensi-description" rows="4" required placeholder="Jelaskan potensi ini secara singkat namun jelas."></textarea></label>
               <label class="admin-field">
                 <span>Foto (opsional, tapi disarankan)</span>
-                <input type="file" id="potensi-foto-file" accept="image/*">
+                <input type="file" id="potensi-foto-file" accept="image/jpeg,image/png,image/webp">
                 <input type="hidden" id="potensi-foto-url">
               </label>
               <div class="admin-image-preview" id="potensi-foto-preview"></div>
@@ -285,7 +286,7 @@
               <label class="admin-field"><span>Urutan tampil</span><input type="number" id="struktur-sort" value="0" min="0"></label>
               <label class="admin-field">
                 <span>Foto</span>
-                <input type="file" id="struktur-foto-file" accept="image/*">
+                <input type="file" id="struktur-foto-file" accept="image/jpeg,image/png,image/webp">
                 <input type="hidden" id="struktur-foto-url">
               </label>
               <div class="admin-image-preview" id="struktur-foto-preview"></div>
@@ -450,8 +451,42 @@
         </div>
       </section>
 
+      <!-- ============ PENGADUAN (kritik / saran warga) ============ -->
+      <section class="admin-panel" data-panel="pengaduan" hidden>
+        <div class="admin-layout">
+          <div class="admin-list-col">
+            <div class="admin-list-head"><h2>Kritik, saran &amp; pengaduan</h2></div>
+            <p class="admin-hint">Pesan masuk dari form Aspirasi di situs. Hanya terlihat di panel ini — tidak dipublikasikan.</p>
+            <div class="filter-group" id="pengaduan-filters">
+              <button class="filter-button active" type="button" data-status="semua">Semua</button>
+              <button class="filter-button" type="button" data-status="baru">Baru</button>
+              <button class="filter-button" type="button" data-status="diproses">Diproses</button>
+              <button class="filter-button" type="button" data-status="selesai">Selesai</button>
+            </div>
+            <div id="pengaduan-list" class="admin-list"></div>
+          </div>
+          <div class="admin-form-col" id="pengaduan-detail-col" hidden>
+            <h2>Detail pengaduan</h2>
+            <div id="pengaduan-detail" class="pengaduan-detail"></div>
+            <form id="pengaduan-form">
+              <label class="admin-field"><span>Status penanganan</span>
+                <select id="pengaduan-status">
+                  <option value="baru">Baru</option>
+                  <option value="diproses">Diproses</option>
+                  <option value="selesai">Selesai</option>
+                </select>
+              </label>
+              <label class="admin-field"><span>Catatan tanggapan (internal)</span><textarea id="pengaduan-tanggapan" rows="4" placeholder="Catatan tindak lanjut, tidak ditampilkan ke warga"></textarea></label>
+              <div class="admin-form-actions">
+                <button class="button button-primary" type="submit">Simpan penanganan</button>
+              </div>
+              <p class="admin-status" id="pengaduan-msg" hidden></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
     </main>
-  </div>
 
   <!-- Template baris pendapatan/belanja (dipakai oleh admin.js) -->
   <template id="budget-row-template">

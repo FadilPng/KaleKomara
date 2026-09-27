@@ -5,6 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Website resmi Desa Kale Ko'mara, Kabupaten Takalar, Sulawesi Selatan.">
   <meta name="theme-color" content="#173d32">
+
+  <!-- SEO & social sharing -->
+  <link rel="canonical" href="https://kale-komara.vercel.app/">
+  <meta property="og:site_name" content="Desa Kale Ko'mara">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Desa Kale Ko'mara — Takalar">
+  <meta property="og:description" content="Website resmi Desa Kale Ko'mara, Kabupaten Takalar, Sulawesi Selatan.">
+  <meta property="og:url" content="https://kale-komara.vercel.app/">
+  <meta property="og:image" content="https://kale-komara.vercel.app/assets/hero.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "GovernmentOrganization",
+        "name": "Pemerintah Desa Kale Ko'mara",
+        "url": "https://kale-komara.vercel.app/",
+        "logo": "https://kale-komara.vercel.app/assets/icon.png",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Polongbangkeng Timur",
+          "addressRegion": "Sulawesi Selatan",
+          "addressCountry": "ID"
+        },
+        "parentOrganization": {
+          "@type": "GovernmentOrganization",
+          "name": "Pemerintah Kabupaten Takalar"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "Desa Kale Ko'mara",
+        "url": "https://kale-komara.vercel.app/"
+      }
+    ]
+  }
+  </script>
   <title>Desa Kale Ko'mara — Takalar</title>
 
   <!-- Satu-satunya library eksternal: Font Awesome -->
@@ -39,6 +77,7 @@
         <a class="nav-link" href="#galeri" data-route="galeri">Galeri</a>
         <a class="nav-link" href="#info" data-route="info">Info</a>
         <a class="nav-link" href="#anggaran" data-route="anggaran">Anggaran</a>
+        <a class="nav-link" href="#aspirasi" data-route="aspirasi">Aspirasi</a>
         <a class="nav-link nav-link-admin" href="admin.html"><i class="fa-solid fa-lock" aria-hidden="true"></i> Masuk</a>
       </nav>
     </div>
@@ -410,7 +449,57 @@
           <div class="doc-list" id="doc-list"></div>
         </div>
       </div>
+    </section>  
+    <!-- ASPIRASI -->
+    <section class="page-panel" id="aspirasi" data-page="aspirasi" aria-labelledby="aspirasi-title" hidden>
+      <div class="page-hero">
+        <div class="container page-hero-inner">
+          <div>
+            <p class="eyebrow light"><span></span> Partisipasi warga</p>
+            <h1 id="aspirasi-title">Kritik, Saran &amp;<br>Pengaduan.</h1>
+          </div>
+          <p>Suara warga membangun desa. Pesan Anda bersifat rahasia dan hanya dibaca oleh perangkat desa yang berwenang.</p>
+        </div>
+      </div>
+
+      <div class="container content-block">
+        <div class="aspirasi-wrap">
+          <p class="aspirasi-eyebrow">Formulir aspirasi</p>
+          <h2 class="aspirasi-title">Sampaikan kritik, saran,<br>atau pengaduan Anda.</h2>
+
+          <form id="aspirasi-form" class="aspirasi-form">
+            <div class="aspirasi-row">
+              <label class="aspirasi-field">
+                <span>NIK (16 digit)</span>
+                <input id="aspirasi-nik" inputmode="numeric" maxlength="16" placeholder="mis. 7301234567890001" autocomplete="off" required>
+              </label>
+              <label class="aspirasi-field">
+                <span>Jenis penyampaian</span>
+                <select id="aspirasi-kategori">
+                  <option value="kritik">Kritik</option>
+                  <option value="saran">Saran</option>
+                  <option value="pengaduan">Pengaduan</option>
+                </select>
+              </label>
+            </div>
+            <label class="aspirasi-field">
+              <span>Isi pesan</span>
+              <textarea id="aspirasi-isi" rows="5" placeholder="Tuliskan kritik, saran, atau pengaduan Anda secara jelas..." required></textarea>
+            </label>
+            <label class="aspirasi-field">
+              <span>Kontak yang bisa dihubungi (opsional)</span>
+              <input id="aspirasi-kontak" type="text" placeholder="mis. 0812-3456-7890">
+            </label>
+            <div class="aspirasi-actions">
+              <button class="button button-primary" type="submit">Kirim aspirasi <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+            <p class="aspirasi-status" id="aspirasi-status" role="status" hidden></p>
+            <p class="aspirasi-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Hanya warga yang NIK-nya terdaftar di data kependudukan desa yang dapat mengirim. Pesan tidak dipublikasikan ke situs.</p>
+          </form>
+        </div>
+      </div>
     </section>
+
   </main>
 
   <footer class="site-footer">
@@ -430,6 +519,7 @@
           <a href="#galeri" data-route="galeri">Galeri</a>
           <a href="#info" data-route="info">Info</a>
           <a href="#anggaran" data-route="anggaran">Anggaran</a>
+          <a href="#aspirasi" data-route="aspirasi">Aspirasi</a>
         </div>
         <div>
           <span>Kontak</span>

@@ -4,13 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#173d32">
+
+  <!-- SEO & social sharing (nilai pastinya diisi berita-detail.js
+       begitu artikel termuat; ini fallback default) -->
+  <meta name="description" content="Berita dan informasi dari Desa Kale Ko'mara, Kabupaten Takalar, Sulawesi Selatan.">
+  <link rel="canonical" href="https://kale-komara.vercel.app/berita-detail.html">
+  <meta property="og:site_name" content="Desa Kale Ko'mara">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Berita — Desa Kale Ko'mara">
+  <meta property="og:description" content="Berita dan informasi dari Desa Kale Ko'mara, Kabupaten Takalar, Sulawesi Selatan.">
+  <meta property="og:url" content="https://kale-komara.vercel.app/berita-detail.html">
+  <meta property="og:image" content="https://kale-komara.vercel.app/assets/hero.png">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Berita — Desa Kale Ko'mara</title>
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="assets/icon.png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js" integrity="sha384-q36VSR1ktH2hgqgm+0LDeyqPW8CyZHSxfDSttSPm5ReOJzB+sYThmh7D4fE+jWTs" crossorigin="anonymous" defer></script>
   <script src="assets/js/supabase-client.js" defer></script>
   <script src="assets/js/berita-detail.js" defer></script>
 </head>
@@ -37,6 +49,7 @@
         <a class="nav-link" href="index.html#galeri" data-route="galeri">Galeri</a>
         <a class="nav-link" href="index.html#info" data-route="info">Info</a>
         <a class="nav-link" href="index.html#anggaran" data-route="anggaran">Anggaran</a>
+        <a class="nav-link" href="index.html#aspirasi" data-route="aspirasi">Aspirasi</a>
         <a class="nav-link nav-link-admin" href="admin.html"><i class="fa-solid fa-lock" aria-hidden="true"></i> Masuk</a>
       </nav>
     </div>
@@ -99,6 +112,7 @@
           <a href="index.html#galeri">Galeri</a>
           <a href="index.html#info">Info</a>
           <a href="index.html#anggaran">Anggaran</a>
+          <a href="index.html#aspirasi">Aspirasi</a>
         </div>
         <div>
           <span>Kontak</span>
