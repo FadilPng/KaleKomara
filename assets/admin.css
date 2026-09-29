@@ -2138,3 +2138,12 @@
   0% { background: rgba(212, 103, 54, .22); }
   100% { background: transparent; }
 }
+
+
+/* ---------- Deretan tombol di kepala daftar ---------- */
+.admin-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}

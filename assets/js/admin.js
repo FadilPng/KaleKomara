@@ -345,6 +345,7 @@
      wireAnggaranForm();
      wirePengaduan();
      wirePengaduanRealtime();
+     wirePendudukExcel();
    });
    
    /* =========================================================
@@ -1352,7 +1353,7 @@
        setBusy(submitBtn, true, "Menyimpan KK...");
        try {
          const payload = {
-           no_kk: $("keluarga-no-kk").value.trim(),
+           no_kk: $("keluarga-no-kk").value.replace(/\D/g, ""),
            kepala_keluarga: $("keluarga-kepala").value.trim(),
            dusun_id: $("keluarga-dusun").value || null,
            alamat: $("keluarga-alamat").value.trim()
@@ -1430,6 +1431,12 @@
      $("anggota-tgl-lahir").value = item.tanggal_lahir || "";
      $("anggota-status").value = item.status_hubungan || "Anak";
      $("anggota-pekerjaan").value = item.pekerjaan || "";
+     $("anggota-tempat-lahir").value = item.tempat_lahir || "";
+     $("anggota-status-kawin").value = item.status_perkawinan || "";
+     $("anggota-agama").value = item.agama || "";
+     $("anggota-gol-darah").value = item.gol_darah || "";
+     $("anggota-negara").value = item.negara || "";
+     $("anggota-pendidikan").value = item.pendidikan || "";
      $("anggota-form-title").textContent = "Ubah anggota";
      $("anggota-delete-btn").hidden = false;
      renderAnggotaList();
@@ -1451,7 +1458,13 @@
            jenis_kelamin: $("anggota-jk").value,
            tanggal_lahir: $("anggota-tgl-lahir").value || null,
            status_hubungan: $("anggota-status").value,
-           pekerjaan: $("anggota-pekerjaan").value.trim() || null
+           pekerjaan: $("anggota-pekerjaan").value.trim() || null,
+           tempat_lahir: $("anggota-tempat-lahir").value.trim() || null,
+           status_perkawinan: $("anggota-status-kawin").value.trim() || null,
+           agama: $("anggota-agama").value.trim() || null,
+           gol_darah: $("anggota-gol-darah").value.trim() || null,
+           negara: $("anggota-negara").value.trim() || null,
+           pendidikan: $("anggota-pendidikan").value.trim() || null
          };
          const query = anggotaEditingId
            ? supabaseClient.from("penduduk").update(payload).eq("id", anggotaEditingId)
@@ -1795,4 +1808,383 @@
          }
        })
        .subscribe();
+   }
+
+   /* =========================================================
+      9. EXCEL — Export / Import data penduduk
+      Format kolom mengikuti lembar kerja sekretaris desa:
+      ALAMAT DUSUN | KODE KELUARGA | NAMA KEPALA KELUARGA | NIK |
+      NAMA ANGGOTA KELUARGA | JENIS KELAMIN | HUBUNGAN |
+      TEMPAT LAHIR | TANGGAL LAHIR | USIA | STATUS | AGAMA |
+      GOL DARAH | NEGARA | PENDIDIKAN | PEKERJAAN
+      ========================================================= */
+   const EXCEL_HEADERS = [
+     "NO", "ALAMAT DUSUN", "KODE KELUARGA", "NAMA KEPALA KELUARGA", "N I K",
+     "NAMA ANGGOTA KELUARGA", "JENIS KELAMIN", "HUBUNGAN", "TEMPAT LAHIR",
+     "TANGGAL LAHIR", "USIA", "STATUS", "AGAMA", "GOL DARAH", "NEGARA",
+     "PENDIDIKAN", "PEKERJAAN"
+   ];
+
+   function hitungUsia(tgl) {
+     if (!tgl) return "";
+     const lahir = new Date(tgl);
+     if (isNaN(lahir)) return "";
+     const kini = new Date();
+     let usia = kini.getFullYear() - lahir.getFullYear();
+     const m = kini.getMonth() - lahir.getMonth();
+     if (m < 0 || (m === 0 && kini.getDate() < lahir.getDate())) usia--;
+     return usia;
+   }
+
+   function fmtTanggalExcel(iso) {
+     if (!iso) return "";
+     const [y, m, d] = String(iso).slice(0, 10).split("-");
+     return `${d}/${m}/${y}`;
+   }
+
+   async function exportPendudukExcel() {
+     const btn = $("penduduk-export-btn");
+     setBusy(btn, true, "Menyiapkan...");
+     try {
+       const { data, error } = await supabaseClient
+         .from("keluarga")
+         .select("*, dusun(nama), penduduk(*)")
+         .order("created_at");
+       if (error) throw error;
+
+       const rows = [
+         [`DATA DASAR KELUARGA TAHUN ${new Date().getFullYear()}`],
+         ["DESA KALE KO'MARA KECAMATAN POLONGBANGKENG UTARA KABUPATEN TAKALAR"],
+         [],
+         EXCEL_HEADERS
+       ];
+       let no = 0;
+       (data || []).forEach((kk) => {
+         const namaDusun = kk.dusun && kk.dusun.nama || "";
+         const anggota = (kk.penduduk || []).slice()
+           .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+         (anggota.length ? anggota : [null]).forEach((p) => {
+           no++;
+           rows.push([
+             no,
+             namaDusun,
+             kk.no_kk,
+             kk.kepala_keluarga,
+             p ? p.nik || "" : "",
+             p ? p.nama : "",
+             p ? (p.jenis_kelamin === "P" ? "PEREMPUAN" : "LAKI-LAKI") : "",
+             p ? p.status_hubungan || "" : "",
+             p ? p.tempat_lahir || "" : "",
+             p ? fmtTanggalExcel(p.tanggal_lahir) : "",
+             p ? hitungUsia(p.tanggal_lahir) : "",
+             p ? p.status_perkawinan || "" : "",
+             p ? p.agama || "" : "",
+             p ? p.gol_darah || "" : "",
+             p ? p.negara || "" : "",
+             p ? p.pendidikan || "" : "",
+             p ? p.pekerjaan || "" : ""
+           ]);
+         });
+       });
+
+       const ws = XLSX.utils.aoa_to_sheet(rows);
+       ws["!cols"] = EXCEL_HEADERS.map((h) => ({ wch: Math.max(String(h).length + 2, 16) }));
+       ws["!merges"] = [0, 1].map((r) => ({ s: { r, c: 0 }, e: { r, c: EXCEL_HEADERS.length - 1 } }));
+       const wb = XLSX.utils.book_new();
+       XLSX.utils.book_append_sheet(wb, ws, "Data Penduduk");
+       XLSX.writeFile(wb, `data-penduduk-kale-komara-${new Date().toISOString().slice(0, 10)}.xlsx`);
+       setStatus($("keluarga-status"), "Export Excel berhasil diunduh.");
+     } catch (err) {
+       setStatus($("keluarga-status"), "Gagal export: " + err.message, true);
+     } finally {
+       setBusy(btn, false);
+     }
+   }
+
+   // ---------- Import ----------
+   const normHead = (s) => String(s ?? "").toUpperCase().replace(/[^A-Z]/g, "");
+   const HEAD_MAP = {
+     ALAMATDUSUN: "dusun",
+     KODEKELUARGA: "no_kk", NOKK: "no_kk", "NOMOR KK": "no_kk",
+     NAMAKEPALAKELUARGA: "kepala",
+     NIK: "nik",
+     NAMAANGGOTAKELUARGA: "nama", NAMA: "nama",
+     JENISKELAMIN: "jk",
+     HUBUNGAN: "hubungan",
+     TEMPATLAHIR: "tempat_lahir",
+     TANGGALLAHIR: "tgl",
+     USIA: null,
+     STATUS: "status_kawin",
+     AGAMA: "agama",
+     GOLDARAH: "gol_darah",
+     NEGARA: "negara",
+     PENDIDIKAN: "pendidikan",
+     PEKERJAAN: "pekerjaan"
+   };
+
+   function normJK(v) {
+     const s = String(v ?? "").toUpperCase().replace(/[^A-Z]/g, "");
+     if (s === "P" || s === "PEREMPUAN" || s === "WANITA") return "P";
+     return "L";
+   }
+
+   function parseTanggalExcel(v) {
+     const out = (y, m, d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+     const valid = (y, m, d) => {
+       if (!(y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) return false;
+       const dt = new Date(Date.UTC(y, m - 1, d));
+       return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+     };
+     if (v === "" || v == null) return null;
+     if (v instanceof Date) {
+       const y = v.getUTCFullYear(), m = v.getUTCMonth() + 1, d = v.getUTCDate();
+       return valid(y, m, d) ? out(y, m, d) : null;
+     }
+     if (typeof v === "number") { // serial tanggal Excel
+       const d0 = new Date(Math.round((v - 25569) * 86400000));
+       const y = d0.getUTCFullYear(), m = d0.getUTCMonth() + 1, d = d0.getUTCDate();
+       return !isNaN(d0) && valid(y, m, d) ? out(y, m, d) : null;
+     }
+     const s = String(v).trim();
+     let m = s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+     if (m) {
+       const p = +m[1], q = +m[2], y = +m[3];
+       if (valid(y, q, p)) return out(y, q, p); // DD/MM/YYYY (format dokumen)
+       if (valid(y, p, q)) return out(y, p, q); // MM/DD/YYYY
+       return null;
+     }
+     m = s.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
+     if (m) {
+       const y = +m[1], p = +m[2], q = +m[3];
+       if (valid(y, p, q)) return out(y, p, q); // YYYY-MM-DD
+       if (valid(y, q, p)) return out(y, q, p); // YYYY-DD-MM (sel tertukar)
+     }
+     return null;
+   }
+
+   async function importPendudukExcel(file) {
+     const buf = await file.arrayBuffer();
+     const wb = XLSX.read(buf);
+     const ws = wb.Sheets[wb.SheetNames[0]];
+     const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+     if (!aoa.length) throw new Error("Sheet pertama kosong.");
+
+     // Judul kolom boleh berada di bawah judul dokumen — cari s.d. 15 baris pertama.
+     let headIdx = -1;
+     for (let i = 0; i < Math.min(aoa.length, 15); i++) {
+       const norms = aoa[i].map(normHead);
+       if (norms.includes("KODEKELUARGA") ||
+           (norms.includes("NIK") && norms.includes("NAMAANGGOTAKELUARGA"))) { headIdx = i; break; }
+     }
+     if (headIdx < 0) {
+       throw new Error("Judul kolom (KODE KELUARGA / NAMA ANGGOTA KELUARGA) tidak ditemukan di 15 baris pertama.");
+     }
+     const fields = aoa[headIdx].map((h) => HEAD_MAP[normHead(h)] || null);
+
+     const mapped = [];
+     for (let i = headIdx + 1; i < aoa.length; i++) {
+       const out = {};
+       aoa[i].forEach((val, c) => { if (fields[c]) out[fields[c]] = val; });
+       if (String(out.nama ?? "").trim() && String(out.no_kk ?? "").trim()) {
+         out.rowNo = i + 1;
+         mapped.push(out);
+       }
+     }
+     if (!mapped.length) throw new Error("Tidak ada baris data terisi di bawah judul kolom.");
+
+     // Nomor KK hanya boleh angka — buang koma atas, spasi, huruf.
+     mapped.forEach((r) => { r.no_kk = String(r.no_kk).replace(/\D/g, ""); });
+     for (let i = mapped.length - 1; i >= 0; i--) if (!mapped[i].no_kk) mapped.splice(i, 1);
+     if (!mapped.length) throw new Error("KODE KELUARGA tidak berisi angka sama sekali.");
+
+     const [{ data: kkRows }, { data: pdRows }, { data: dusunRows }] = await Promise.all([
+       supabaseClient.from("keluarga").select("id, no_kk, kepala_keluarga, dusun_id, alamat"),
+       supabaseClient.from("penduduk").select("id, nik, keluarga_id"),
+       supabaseClient.from("dusun").select("id, nama")
+     ]);
+     const kkByNo = new Map((kkRows || []).map((k) => [String(k.no_kk).replace(/\D/g, ""), k]));
+     const pdByNik = new Map((pdRows || []).filter((p) => p.nik).map((p) => [p.nik, p]));
+     const dusunByName = new Map((dusunRows || []).map((d) => [normHead(d.nama), d]));
+     // Cocokkan nama dusun longgar: "BUTTADIDIA" ketemu "Dusun Buttadidia", dll.
+     const cariDusun = (key) => {
+       if (!key) return null;
+       if (dusunByName.has(key)) return dusunByName.get(key);
+       for (const [k, d] of dusunByName) {
+         if (k.includes(key) || key.includes(k)) return d;
+       }
+       return null;
+     };
+
+     const groups = new Map();
+     mapped.forEach((r) => {
+       const kk = String(r.no_kk).trim();
+       if (!groups.has(kk)) groups.set(kk, []);
+       groups.get(kk).push(r);
+     });
+
+     // Kolom tambahan boleh belum ada di database (SQL 10 belum dijalankan):
+     // kalau Postgres menolak, ulangi otomatis tanpa kolom tersebut.
+     const EXTRA_COLS = ["tempat_lahir", "status_perkawinan", "agama", "gol_darah", "negara", "pendidikan"];
+     let extraColsOk = true;
+     const gagal = [];
+     let kkBaru = 0, anggotaBaru = 0, anggotaUpdate = 0, dupDilewati = 0, tanggalKosong = 0;
+     const contohBarisTgl = [];
+
+     const clean = (p) => {
+       const { rowNo, ...rest } = p;
+       if (!extraColsOk) EXTRA_COLS.forEach((k) => delete rest[k]);
+       return rest;
+     };
+
+     const pendudukWrite = (mode, arr) => mode === "insert"
+       ? supabaseClient.from("penduduk").insert(arr).select("id, nik")
+       : supabaseClient.from("penduduk").upsert(arr, { onConflict: "id" });
+
+     // Batch 500 baris per request; kalau chunk ditolak, jatuh ke per-baris
+     // supaya baris yang buruk ketahuan tanpa menggagalkan sisanya.
+     async function bulkPenduduk(mode, items) {
+       let ok = 0;
+       for (let i = 0; i < items.length; i += 500) {
+         const chunk = items.slice(i, i + 500);
+         let { data, error } = await pendudukWrite(mode, chunk.map((x) => clean(x.p)));
+         if (error && extraColsOk && /does not exist/i.test(error.message)) {
+           extraColsOk = false;
+           ({ data, error } = await pendudukWrite(mode, chunk.map((x) => clean(x.p))));
+         }
+         if (error) console.warn("Import chunk ditolak:", error.message);
+         if (!error) {
+           ok += chunk.length;
+           if (data) data.forEach((d) => d.nik && pdByNik.set(d.nik, d));
+           continue;
+         }
+         for (const x of chunk) {
+           let r = await pendudukWrite(mode, [clean(x.p)]);
+           if (r.error && extraColsOk && /does not exist/i.test(r.error.message)) {
+             extraColsOk = false;
+             r = await pendudukWrite(mode, [clean(x.p)]);
+           }
+           if (r.error) gagal.push(`baris ${x.rowNo} (${x.p.nama}): ${r.error.message}`);
+           else {
+             ok++;
+             if (r.data) r.data.forEach((d) => d.nik && pdByNik.set(d.nik, d));
+           }
+         }
+       }
+       return ok;
+     }
+
+     // ---------- KK: batch insert + batch update kepala ----------
+     const newKK = [], kkUpdate = [];
+     for (const [noKK, rows] of groups) {
+       const kepala = String(rows[0].kepala ?? "").trim();
+       const dusunKey = normHead(rows[0].dusun ?? "");
+       const dusun = cariDusun(dusunKey);
+       const alamatDusun = dusun ? dusun.nama : String(rows[0].dusun ?? "").trim();
+       const existing = kkByNo.get(noKK);
+       if (!existing) {
+         newKK.push({ no_kk: noKK, kepala_keluarga: kepala || "(tanpa nama)", dusun_id: dusun ? dusun.id : null, alamat: alamatDusun || null, rowNo: rows[0].rowNo });
+       } else {
+         const patch = { id: existing.id };
+         let need = false;
+         if (kepala && kepala !== existing.kepala_keluarga) { patch.kepala_keluarga = kepala; need = true; }
+         if (String(existing.no_kk) !== noKK) { patch.no_kk = noKK; need = true; } // buang koma atas dll.
+         if (dusun && !existing.dusun_id) { patch.dusun_id = dusun.id; need = true; }
+         if (alamatDusun && !existing.alamat) { patch.alamat = alamatDusun; need = true; }
+         if (need) kkUpdate.push(patch);
+       }
+     }
+     for (let i = 0; i < newKK.length; i += 500) {
+       const chunk = newKK.slice(i, i + 500);
+       const { data, error } = await supabaseClient.from("keluarga")
+         .insert(chunk.map(({ rowNo, ...rest }) => rest)).select("id, no_kk");
+       if (!error) {
+         kkBaru += data.length;
+         data.forEach((k) => kkByNo.set(k.no_kk, k));
+         continue;
+       }
+       for (const k of chunk) {
+         const r = await supabaseClient.from("keluarga")
+           .insert({ no_kk: k.no_kk, kepala_keluarga: k.kepala_keluarga, dusun_id: k.dusun_id, alamat: k.alamat })
+           .select("id, no_kk");
+         if (r.error) gagal.push(`KK ${k.no_kk} (baris ${k.rowNo}): ${r.error.message}`);
+         else { kkBaru++; r.data.forEach((d) => kkByNo.set(d.no_kk, d)); }
+       }
+     }
+     for (let i = 0; i < kkUpdate.length; i += 500) {
+       await supabaseClient.from("keluarga").upsert(kkUpdate.slice(i, i + 500), { onConflict: "id" });
+     }
+
+     // ---------- Anggota: pisahkan insert baru vs update ----------
+     const toInsert = [], toUpdate = [];
+     const seenNik = new Set();
+     for (const [noKK, rows] of groups) {
+       const kk = kkByNo.get(noKK);
+       if (!kk) {
+         rows.forEach((r) => gagal.push(`baris ${r.rowNo}: KK ${noKK} gagal dibuat, anggota dilewati`));
+         continue;
+       }
+       for (const r of rows) {
+         const nik = String(r.nik ?? "").replace(/\D/g, "") || null;
+         const dbRow = nik ? pdByNik.get(nik) : null;
+         if (nik && !dbRow && seenNik.has(nik)) { dupDilewati++; continue; } // duplikat dalam file
+         if (nik) seenNik.add(nik);
+         const payload = {
+           keluarga_id: kk.id,
+           nama: String(r.nama).trim(),
+           nik,
+           jenis_kelamin: normJK(r.jk),
+           status_hubungan: String(r.hubungan ?? "").trim() || null,
+           tempat_lahir: String(r.tempat_lahir ?? "").trim() || null,
+           tanggal_lahir: parseTanggalExcel(r.tgl),
+           // (tanggal dicek setelah payload jadi)
+           status_perkawinan: String(r.status_kawin ?? "").trim() || null,
+           agama: String(r.agama ?? "").trim() || null,
+           gol_darah: String(r.gol_darah ?? "").trim() || null,
+           negara: String(r.negara ?? "").trim() || null,
+           pendidikan: String(r.pendidikan ?? "").trim() || null,
+           pekerjaan: String(r.pekerjaan ?? "").trim() || null
+         };
+         if (String(r.tgl ?? "").trim() && !payload.tanggal_lahir) {
+           tanggalKosong++;
+           if (contohBarisTgl.length < 5) contohBarisTgl.push(`baris ${r.rowNo}`);
+         }
+         if (dbRow) { payload.id = dbRow.id; toUpdate.push({ p: payload, rowNo: r.rowNo }); }
+         else toInsert.push({ p: payload, rowNo: r.rowNo });
+       }
+     }
+
+     anggotaBaru = await bulkPenduduk("insert", toInsert);
+     anggotaUpdate = await bulkPenduduk("upsert", toUpdate);
+
+     await Promise.all([loadKeluarga(), loadDusun(), loadStatistik()]);
+
+     const catatan = [];
+     if (!extraColsOk) catatan.push("kolom tambahan (agama, pendidikan, dll.) belum ada di database — jalankan 10-penduduk-excel.sql di SQL Editor supaya ikut tersimpan");
+     if (dupDilewati) catatan.push(`${dupDilewati} NIK duplikat dalam file dilewati`);
+     if (tanggalKosong) catatan.push(`${tanggalKosong} tanggal lahir tak terbaca, dikosongkan (${contohBarisTgl.join(", ")}${tanggalKosong > contohBarisTgl.length ? ", …" : ""}) — lengkapi lewat form edit anggota`);
+     const ringkasan =
+       `Import selesai: ${kkBaru} KK baru, ${anggotaBaru} anggota baru, ${anggotaUpdate} diperbarui.` +
+       (catatan.length ? " Catatan: " + catatan.join("; ") + "." : "") +
+       (gagal.length ? ` ${gagal.length} baris gagal — ` + gagal.slice(0, 5).join("; ") : "");
+     setStatus($("keluarga-status"), ringkasan, gagal.length > 0 || !extraColsOk);
+   }
+
+   function wirePendudukExcel() {
+     $("penduduk-export-btn").addEventListener("click", exportPendudukExcel);
+     $("penduduk-import-btn").addEventListener("click", () => $("penduduk-import-file").click());
+     $("penduduk-import-file").addEventListener("change", async (event) => {
+       const file = event.target.files[0];
+       event.target.value = "";
+       if (!file) return;
+       if (!window.confirm(`Import "${file.name}"?\n\nAnggota dengan NIK yang sudah ada akan DIPERBARUI, sisanya ditambahkan. KK baru dibuat otomatis.`)) return;
+       const btn = $("penduduk-import-btn");
+       setBusy(btn, true, "Mengimport...");
+       try {
+         await importPendudukExcel(file);
+       } catch (err) {
+         setStatus($("keluarga-status"), "Gagal import: " + err.message, true);
+       } finally {
+         setBusy(btn, false);
+       }
+     });
    }
