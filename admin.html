@@ -9,11 +9,12 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="assets/admin.css">
+  <link rel="stylesheet" href="assets/admin.css?v=20260929">
   <link rel="icon" type="image/x-icon" href="assets/icon.png">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js" integrity="sha384-q36VSR1ktH2hgqgm+0LDeyqPW8CyZHSxfDSttSPm5ReOJzB+sYThmh7D4fE+jWTs" crossorigin="anonymous" defer></script>
   <script src="assets/js/supabase-client.js" defer></script>
-  <script src="assets/js/admin.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous" defer></script>
+  <script src="assets/js/admin.js?v=20260929" defer></script>
 </head>
 <body class="admin-body">
 
@@ -343,7 +344,15 @@
       <section class="admin-panel" data-panel="penduduk" hidden>
         <div class="admin-layout">
           <div class="admin-list-col">
-            <div class="admin-list-head"><h2>Daftar KK</h2><button class="button button-primary" id="keluarga-new-btn" type="button">+ KK baru</button></div>
+            <div class="admin-list-head">
+              <h2>Daftar KK</h2>
+              <div class="admin-head-actions">
+                <button class="button" id="penduduk-export-btn" type="button"><i class="fa-solid fa-file-excel" aria-hidden="true"></i> Export Excel</button>
+                <button class="button" id="penduduk-import-btn" type="button"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Import Excel</button>
+                <input type="file" id="penduduk-import-file" accept=".xlsx,.xls" hidden>
+                <button class="button button-primary" id="keluarga-new-btn" type="button">+ KK baru</button>
+              </div>
+            </div>
             <label class="admin-field"><span>Cari No. KK / nama kepala keluarga</span><input type="text" id="keluarga-search" placeholder="Ketik untuk mencari..."></label>
             <div id="keluarga-list" class="admin-list"></div>
           </div>
@@ -395,6 +404,18 @@
                     </select>
                   </label>
                   <label class="admin-field"><span>Pekerjaan (opsional)</span><input type="text" id="anggota-pekerjaan"></label>
+                </div>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Tempat lahir (opsional)</span><input type="text" id="anggota-tempat-lahir"></label>
+                  <label class="admin-field"><span>Status perkawinan (opsional)</span><input type="text" id="anggota-status-kawin" placeholder="mis. BELUM KAWIN"></label>
+                </div>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Agama (opsional)</span><input type="text" id="anggota-agama"></label>
+                  <label class="admin-field"><span>Gol. darah (opsional)</span><input type="text" id="anggota-gol-darah" placeholder="mis. O"></label>
+                </div>
+                <div class="admin-field-row">
+                  <label class="admin-field"><span>Negara (opsional)</span><input type="text" id="anggota-negara" placeholder="mis. INDONESIA"></label>
+                  <label class="admin-field"><span>Pendidikan (opsional)</span><input type="text" id="anggota-pendidikan"></label>
                 </div>
                 <div class="admin-form-actions">
                   <button class="button button-primary" type="submit">Simpan anggota</button>

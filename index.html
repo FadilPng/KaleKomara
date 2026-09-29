@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="id">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +27,7 @@
         "logo": "https://kale-komara.vercel.app/assets/icon.png",
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": "Polongbangkeng Utara",
+          "addressLocality": "Polongbangkeng Timur",
           "addressRegion": "Sulawesi Selatan",
           "addressCountry": "ID"
         },
@@ -47,13 +48,18 @@
 
   <!-- Satu-satunya library eksternal: Font Awesome -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="assets/icon.png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js" integrity="sha384-q36VSR1ktH2hgqgm+0LDeyqPW8CyZHSxfDSttSPm5ReOJzB+sYThmh7D4fE+jWTs" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js"
+    integrity="sha384-q36VSR1ktH2hgqgm+0LDeyqPW8CyZHSxfDSttSPm5ReOJzB+sYThmh7D4fE+jWTs" crossorigin="anonymous"
+    defer></script>
   <script src="assets/js/supabase-client.js" defer></script>
   <script src="assets/js/script.js" defer></script>
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Lewati ke konten</a>
 
@@ -63,11 +69,12 @@
         <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
         <span class="brand-copy">
           <strong>Desa Kale Ko'mara</strong>
-          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Utara</small>
+          <small>Kabupaten Takalar, Kecamatan Polongbangkeng Timur</small>
         </span>
       </a>
 
-      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka menu navigasi">
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"
+        aria-label="Buka menu navigasi">
         <span></span><span></span><span></span>
       </button>
 
@@ -78,7 +85,8 @@
         <a class="nav-link" href="#info" data-route="info">Info</a>
         <a class="nav-link" href="#anggaran" data-route="anggaran">Anggaran</a>
         <a class="nav-link" href="#aspirasi" data-route="aspirasi">Aspirasi</a>
-        <a class="nav-link nav-link-admin" href="admin.html"><i class="fa-solid fa-lock" aria-hidden="true"></i> Masuk</a>
+        <a class="nav-link nav-link-admin" href="admin.html"><i class="fa-solid fa-lock" aria-hidden="true"></i>
+          Masuk</a>
       </nav>
     </div>
   </header>
@@ -101,20 +109,23 @@
 
         <div class="container hero-grid">
           <div class="hero-copy reveal">
-            <p class="eyebrow"><span></span> Kabupaten Takalar ·  Kecamatan Polongbangkeng Utara  ·  Sulawesi Selatan</p>
+            <p class="eyebrow"><span></span> Kabupaten Takalar · Kecamatan Polongbangkeng Timur · Sulawesi Selatan</p>
             <h1 id="home-title">Ruang informasi<br>Desa <em>Kale Ko'mara</em></h1>
-            <p class="hero-lead">Tempat warga menemukan kabar desa, informasi pelayanan, dan dokumentasi kegiatan dalam satu ruang yang sederhana.</p>
+            <p class="hero-lead">Tempat warga menemukan kabar desa, informasi pelayanan, dan dokumentasi kegiatan dalam
+              satu ruang yang sederhana.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#info" data-route="info">
                 Lihat info desa <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
               </a>
-              <a class="text-link" href="#berita" data-route="berita">Baca kabar terbaru <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="#berita" data-route="berita">Baca kabar terbaru <span
+                  aria-hidden="true">↗</span></a>
             </div>
           </div>
 
           <div class="hero-location reveal delay-1">
             <span class="caption-line"></span>
-            <p><small>Selamat datang di</small><strong>Desa Kale Ko'mara</strong><span>Polongbangkeng Utara, Takalar, <br>Sulawesi Selatan</span></p>
+            <p><small>Selamat datang di</small><strong>Desa Kale Ko'mara</strong><span>PolongBangkeng Timur, Takalar,
+                <br>Sulawesi Selatan</span></p>
           </div>
         </div>
       </div>
@@ -156,27 +167,33 @@
       <section class="welcome-section">
         <div class="container welcome-grid">
           <div class="welcome-image reveal" id="spot-image-wrap">
-            <a class="spot-link" href="#info-potensi" data-route="info" aria-label="Lihat potensi desa selengkapnya di halaman Info Desa">
+            <a class="spot-link" href="#info-potensi" data-route="info"
+              aria-label="Lihat potensi desa selengkapnya di halaman Info Desa">
               <div class="spot-slide" id="spot-image-slide">
                 <img id="spot-image" src="assets/bendung.jpeg" alt="Bendungan Pamukkulu" width="400" height="600">
-                <span class="image-note" id="spot-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Bendungan Pamukkulu</span>
+                <span class="image-note" id="spot-note"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                  Bendungan Pamukkulu</span>
               </div>
             </a>
-      
+
             <div class="spot-nav">
-              <button type="button" class="spot-nav-btn prev" id="spot-prev" aria-label="Spot sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+              <button type="button" class="spot-nav-btn prev" id="spot-prev" aria-label="Spot sebelumnya"><i
+                  class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
               <span class="spot-counter" id="spot-counter">1 / 3</span>
-              <button type="button" class="spot-nav-btn next" id="spot-next" aria-label="Spot berikutnya"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+              <button type="button" class="spot-nav-btn next" id="spot-next" aria-label="Spot berikutnya"><i
+                  class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
             </div>
           </div>
-      
+
           <div class="welcome-copy reveal delay-1">
             <p class="section-kicker">Potensi desa</p>
             <div class="spot-slide" id="spot-copy-slide">
               <h2 id="spot-title">Bendungan Pamukkulu</h2>
-              <p id="spot-desc">Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan pemandangan yang tenang di sekitar Desa Kale Ko'mara.</p>
+              <p id="spot-desc">Bendungan yang jadi salah satu spot favorit warga untuk bersantai dan berfoto, dengan
+                pemandangan yang tenang di sekitar Desa Kale Ko'mara.</p>
             </div>
-            <a class="text-link dark" href="#info-potensi" data-route="info">Mengenal desa lebih dekat <span aria-hidden="true">→</span></a>
+            <a class="text-link dark" href="#info-potensi" data-route="info">Mengenal desa lebih dekat <span
+                aria-hidden="true">→</span></a>
           </div>
         </div>
       </section>
@@ -187,7 +204,8 @@
             <p class="section-kicker">Kabar terbaru</p>
             <h2>Berita dari desa</h2>
           </div>
-          <a class="text-link dark" href="#berita" data-route="berita">Lihat semua berita <span aria-hidden="true">→</span></a>
+          <a class="text-link dark" href="#berita" data-route="berita">Lihat semua berita <span
+              aria-hidden="true">→</span></a>
         </div>
         <div class="news-grid" id="home-news-list" aria-live="polite"></div>
       </section>
@@ -278,7 +296,8 @@
           <article class="info-section reveal" id="info-profil">
             <p class="section-kicker">01 · Profil desa</p>
             <h2>Sekilas Kale Ko'mara</h2>
-            <p class="lead-copy" id="profil-lead">Desa Kale Ko'mara berada di wilayah Kabupaten Takalar, Sulawesi Selatan. Halaman ini disiapkan sebagai pusat informasi yang dekat dan mudah digunakan oleh warga.</p>
+            <p class="lead-copy" id="profil-lead">Desa Kale Ko'mara berada di wilayah Kabupaten Takalar, Sulawesi
+              Selatan. Halaman ini disiapkan sebagai pusat informasi yang dekat dan mudah digunakan oleh warga.</p>
             <div class="fact-grid">
               <div class="fact-item">
                 <span>Wilayah</span>
@@ -290,7 +309,7 @@
               </div>
               <div class="fact-item">
                 <span>Kecamatan</span>
-                <strong id="profil-kecamatan">Polongbangkeng Utara</strong>
+                <strong id="profil-kecamatan">Polongbangkeng Timur</strong>
               </div>
               <div class="fact-item">
                 <span>Kode pos</span>
@@ -300,7 +319,9 @@
 
             <div class="profil-sub">
               <h3>Sejarah singkat</h3>
-              <p id="profil-sejarah">Catatan sejarah berdirinya Desa Kale Ko'mara, asal-usul nama, serta tokoh dan peristiwa penting yang membentuk desa akan dilengkapi di bagian ini. Bagian ini disiapkan agar warga, khususnya generasi muda, dapat mengenal asal-usul kampung halamannya.</p>
+              <p id="profil-sejarah">Catatan sejarah berdirinya Desa Kale Ko'mara, asal-usul nama, serta tokoh dan
+                peristiwa penting yang membentuk desa akan dilengkapi di bagian ini. Bagian ini disiapkan agar warga,
+                khususnya generasi muda, dapat mengenal asal-usul kampung halamannya.</p>
             </div>
 
             <div class="profil-sub">
@@ -318,7 +339,8 @@
           <article class="info-section reveal" id="info-potensi">
             <p class="section-kicker">02 · Potensi desa</p>
             <h2>Potensi Kale Ko'mara</h2>
-            <p class="lead-copy">Selain dikenal sebagai desa yang asri, Kale Ko'mara juga menyimpan potensi wisata alam, pertanian, dan usaha warga yang terus dikembangkan bersama untuk kesejahteraan masyarakat.</p>
+            <p class="lead-copy">Selain dikenal sebagai desa yang asri, Kale Ko'mara juga menyimpan potensi wisata alam,
+              pertanian, dan usaha warga yang terus dikembangkan bersama untuk kesejahteraan masyarakat.</p>
 
             <div id="potensi-groups">
               <p class="loading-text">Memuat data...</p>
@@ -328,14 +350,16 @@
           <article class="info-section reveal" id="info-struktur">
             <p class="section-kicker">03 · Struktur pemerintahan</p>
             <h2>Perangkat desa</h2>
-            <p class="lead-copy">Susunan organisasi Pemerintah Desa Kale Ko'mara yang menjalankan tugas pelayanan dan pembangunan bagi warga.</p>
+            <p class="lead-copy">Susunan organisasi Pemerintah Desa Kale Ko'mara yang menjalankan tugas pelayanan dan
+              pembangunan bagi warga.</p>
             <div class="struktur-list" id="struktur-list"></div>
           </article>
 
           <article class="info-section reveal" id="info-statistik">
             <p class="section-kicker">04 · Statistik desa</p>
             <h2>Data kependudukan</h2>
-            <p class="lead-copy">Gambaran umum jumlah dan sebaran penduduk Desa Kale Ko'mara. Data akan diperbarui secara berkala mengikuti pemutakhiran data desa.</p>
+            <p class="lead-copy">Gambaran umum jumlah dan sebaran penduduk Desa Kale Ko'mara. Data akan diperbarui
+              secara berkala mengikuti pemutakhiran data desa.</p>
 
             <div class="fact-grid stat-grid" id="stat-grid"></div>
 
@@ -343,7 +367,8 @@
               <div class="gender-block-heading">
                 <span>Komposisi penduduk berdasarkan jenis kelamin</span>
               </div>
-              <div class="gender-bar" id="gender-bar" role="img" aria-label="Perbandingan jumlah penduduk laki-laki dan perempuan"></div>
+              <div class="gender-bar" id="gender-bar" role="img"
+                aria-label="Perbandingan jumlah penduduk laki-laki dan perempuan"></div>
               <div class="gender-legend" id="gender-legend"></div>
             </div>
 
@@ -356,21 +381,31 @@
           <article class="info-section reveal" id="info-layanan">
             <p class="section-kicker">05 · Pelayanan</p>
             <h2>Layanan administrasi</h2>
-            <p>Silakan menghubungi atau datang ke kantor desa untuk memastikan persyaratan terbaru sebelum mengurus dokumen.</p>
+            <p>Silakan menghubungi atau datang ke kantor desa untuk memastikan persyaratan terbaru sebelum mengurus
+              dokumen.</p>
             <div class="service-list">
               <div class="service-item">
                 <span class="service-icon"><i class="fa-regular fa-id-card" aria-hidden="true"></i></span>
-                <div><h3>Administrasi kependudukan</h3><p>Surat pengantar dan kebutuhan administrasi warga.</p></div>
+                <div>
+                  <h3>Administrasi kependudukan</h3>
+                  <p>Surat pengantar dan kebutuhan administrasi warga.</p>
+                </div>
                 <span class="service-number">01</span>
               </div>
               <div class="service-item">
                 <span class="service-icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></span>
-                <div><h3>Surat keterangan</h3><p>Informasi pengurusan surat sesuai kebutuhan warga.</p></div>
+                <div>
+                  <h3>Surat keterangan</h3>
+                  <p>Informasi pengurusan surat sesuai kebutuhan warga.</p>
+                </div>
                 <span class="service-number">02</span>
               </div>
               <div class="service-item">
                 <span class="service-icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span>
-                <div><h3>Informasi bantuan</h3><p>Informasi awal program sosial dan layanan masyarakat.</p></div>
+                <div>
+                  <h3>Informasi bantuan</h3>
+                  <p>Informasi awal program sosial dan layanan masyarakat.</p>
+                </div>
                 <span class="service-number">03</span>
               </div>
             </div>
@@ -383,7 +418,9 @@
               <div class="contact-details">
                 <div class="contact-row">
                   <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                  <div><span>Alamat kantor desa</span><strong id="kontak-alamat">Desa Kale Ko'mara, Kecamatan Polongbangkeng Utara, Kabupaten Takalar</strong><small id="kontak-alamat-detail">Alamat lengkap akan diperbarui</small></div>
+                  <div><span>Alamat kantor desa</span><strong id="kontak-alamat">Desa Kale Ko'mara, Kecamatan
+                      Polongbangkeng Timur, Kabupaten Takalar</strong><small id="kontak-alamat-detail">Alamat lengkap
+                      akan diperbarui</small></div>
                 </div>
                 <div class="contact-row">
                   <i class="fa-solid fa-phone" aria-hidden="true"></i>
@@ -395,14 +432,9 @@
                 </div>
               </div>
               <div class="map-container" style="width: 100%; min-height: 250px; border-radius: 12px; overflow: hidden;">
-                <iframe
-                  id="kontak-map"
+                <iframe id="kontak-map"
                   src="https://maps.google.com/maps?q=-5.3972266587305375, 119.59939521254098&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                  width="100%" 
-                  height="100%" 
-                  style="border:0; min-height: 250px;" 
-                  allowfullscreen="" 
-                  loading="lazy" 
+                  width="100%" height="100%" style="border:0; min-height: 250px;" allowfullscreen="" loading="lazy"
                   referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
               </div>
@@ -420,7 +452,8 @@
             <p class="eyebrow light"><span></span> Transparansi desa</p>
             <h1 id="anggaran-title">Anggaran<br>Pendapatan &amp; Belanja.</h1>
           </div>
-          <p>Ringkasan APBDes Desa Kale Ko'mara sebagai bentuk keterbukaan informasi bagi warga. Angka bersifat contoh dan akan diperbarui sesuai dokumen resmi.</p>
+          <p>Ringkasan APBDes Desa Kale Ko'mara sebagai bentuk keterbukaan informasi bagi warga. Angka bersifat contoh
+            dan akan diperbarui sesuai dokumen resmi.</p>
         </div>
       </div>
 
@@ -449,7 +482,7 @@
           <div class="doc-list" id="doc-list"></div>
         </div>
       </div>
-    </section>  
+    </section>
     <!-- ASPIRASI -->
     <section class="page-panel" id="aspirasi" data-page="aspirasi" aria-labelledby="aspirasi-title" hidden>
       <div class="page-hero">
@@ -458,7 +491,8 @@
             <p class="eyebrow light"><span></span> Partisipasi warga</p>
             <h1 id="aspirasi-title">Kritik, Saran &amp;<br>Pengaduan.</h1>
           </div>
-          <p>Suara warga membangun desa. Pesan Anda bersifat rahasia dan hanya dibaca oleh perangkat desa yang berwenang.</p>
+          <p>Suara warga membangun desa. Pesan Anda bersifat rahasia dan hanya dibaca oleh perangkat desa yang
+            berwenang.</p>
         </div>
       </div>
 
@@ -471,7 +505,8 @@
             <div class="aspirasi-row">
               <label class="aspirasi-field">
                 <span>NIK (16 digit)</span>
-                <input id="aspirasi-nik" inputmode="numeric" maxlength="16" placeholder="mis. 7301234567890001" autocomplete="off" required>
+                <input id="aspirasi-nik" inputmode="numeric" maxlength="16" placeholder="mis. 7301234567890001"
+                  autocomplete="off" required>
               </label>
               <label class="aspirasi-field">
                 <span>Jenis penyampaian</span>
@@ -484,17 +519,20 @@
             </div>
             <label class="aspirasi-field">
               <span>Isi pesan</span>
-              <textarea id="aspirasi-isi" rows="5" placeholder="Tuliskan kritik, saran, atau pengaduan Anda secara jelas..." required></textarea>
+              <textarea id="aspirasi-isi" rows="5"
+                placeholder="Tuliskan kritik, saran, atau pengaduan Anda secara jelas..." required></textarea>
             </label>
             <label class="aspirasi-field">
               <span>Kontak yang bisa dihubungi (opsional)</span>
               <input id="aspirasi-kontak" type="text" placeholder="mis. 0812-3456-7890">
             </label>
             <div class="aspirasi-actions">
-              <button class="button button-primary" type="submit">Kirim aspirasi <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+              <button class="button button-primary" type="submit">Kirim aspirasi <i class="fa-solid fa-paper-plane"
+                  aria-hidden="true"></i></button>
             </div>
             <p class="aspirasi-status" id="aspirasi-status" role="status" hidden></p>
-            <p class="aspirasi-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Hanya warga yang NIK-nya terdaftar di data kependudukan desa yang dapat mengirim. Pesan tidak dipublikasikan ke situs.</p>
+            <p class="aspirasi-note"><i class="fa-solid fa-lock" aria-hidden="true"></i> Hanya warga yang NIK-nya
+              terdaftar di data kependudukan desa yang dapat mengirim. Pesan tidak dipublikasikan ke situs.</p>
           </form>
         </div>
       </div>
@@ -507,7 +545,8 @@
       <div>
         <a class="brand footer-brand" href="#home" data-route="home">
           <span class="brand-mark"><img src="assets/icon.png" alt="Logo Desa Kale Ko'mara"></span>
-          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Utara, Kabupaten Takalar</small></span>
+          <span class="brand-copy"><strong>Desa Kale Ko'mara</strong><small>Kecamatan Polongbangkeng Timur, Kabupaten
+              Takalar</small></span>
         </a>
         <p>Ruang informasi untuk warga, dari desa untuk bersama.</p>
       </div>
@@ -536,19 +575,27 @@
   </footer>
 
   <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title">
-    <button class="lightbox-close" type="button" aria-label="Tutup galeri"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <button class="lightbox-close" type="button" aria-label="Tutup galeri"><i class="fa-solid fa-xmark"
+        aria-hidden="true"></i></button>
     <div class="lightbox-content">
       <div class="lightbox-stage" id="lightbox-stage">
         <img id="lightbox-image" src="" alt="">
-        <div class="lightbox-loading" id="lightbox-loading" hidden><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i></div>
-        <button class="lightbox-nav prev" type="button" aria-label="Foto sebelumnya"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-        <button class="lightbox-nav next" type="button" aria-label="Foto berikutnya"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+        <div class="lightbox-loading" id="lightbox-loading" hidden><i class="fa-solid fa-spinner fa-spin"
+            aria-hidden="true"></i></div>
+        <button class="lightbox-nav prev" type="button" aria-label="Foto sebelumnya"><i class="fa-solid fa-chevron-left"
+            aria-hidden="true"></i></button>
+        <button class="lightbox-nav next" type="button" aria-label="Foto berikutnya"><i
+            class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         <span class="lightbox-counter" id="lightbox-counter"></span>
       </div>
-      <div><span id="lightbox-category"></span><h2 id="lightbox-title"></h2><p id="lightbox-description"></p></div>
+      <div><span id="lightbox-category"></span>
+        <h2 id="lightbox-title"></h2>
+        <p id="lightbox-description"></p>
+      </div>
     </div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
+
 </html>
